@@ -20,9 +20,9 @@ posizione(31,1,9).
 posizione(32,2,1).
 posizione(33,2,2).
 posizione(34,2,3).
-posizione(35,2,4).
+%posizione(35,2,4).
 posizione(36,2,5).
-posizione(37,2,6).
+%posizione(37,2,6).
 posizione(38,2,7).
 posizione(39,2,8).
 posizione(40,2,9).
@@ -89,14 +89,22 @@ mangia(M1,T,sudEst) :- mangia(M,T,sudEst),posizione(M,Y,X),posizione(M1,Y + 1,X 
 mangia(M1,T,nordEst) :- mangia(M,T,nordEst),posizione(M,Y,X),posizione(M1,Y - 1,X + 1), M1 > 22. %Mangiate ricorsive diagonale secondaria sopra
 mangia(M1,T,sudOvest) :- mangia(M,T,sudOvest),posizione(M,Y,X),posizione(M1,Y + 1,X - 1), M1 > 22. %Mangiate ricorsive diagonale secondaria sopra
 
-
-
-
+%muovo(N,Y,X,Y,X - 1,T).
+%ovest est sud nord sudOvest sudEst nordOvest nordEst -> Posso muovermi se l ultima mossa che ho fatto mi porta a mangiare                                                                                                                                  muovo(14,4,5,4,5,1),mangia(_,1,_), T = 1.
+%Da aggiustare questa regola, includere nel guess alcuni vincoli, testare t < 5, t < 20
+muovo(N,Y,X,Y,X - 1,T+1) | muovo(N,Y,X,Y,X + 1,T+1) | muovo(N,Y,X,Y + 1,X,T+1) | muovo(N,Y,X,Y - 1,X,T+1) | muovo(N,Y,X,Y + 1,X - 1,T+1) | muovo(N,Y,X,Y + 1,X + 1,T+1) | muovo(N,Y,X,Y - 1,X - 1,T+1) | muovo(N,Y,X,Y - 1,X + 1,T+1) | nonMuovo(N,T+1) :- muovo(N,_,_,Y,X,T),homangiato(T),T = #max{S :homangiato(S)}.
+homangiato(T):-mangia(_,T,_).
 
 %muovo(est) | muove(ovest) | ... | nonMuovo()
 %Non posso andare sulle diagonali se non ci sono
 %se mi muovo devo mangiare
+d(est). d(ovest).
+d(nord). d(sud). d(nordEst). d(sudEst). d(sudOvest). d(nordOvest).
 :- mangia(M,T,D),mangia(M1,T,D1),D != D1,M != M1.
+:-mangia(M,T,_),mangia(M,T1,_) , T!=T1.
+:- muovo(N,Y,X,Y1,X1,T),posizione(N1,Y1,X1) ,t(T1), d(D), T1<T ,not mangia(N1,T1,D).
+:- muovo(_,_,_,_,_,T),not homangiato(T), T != 1.
 #show muovo/6.
 #show mangia/3.
 #show mangiaCella/4.
+#show nonMuovo/2.
