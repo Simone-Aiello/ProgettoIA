@@ -56,23 +56,47 @@ posizione(22,3,9).
 cella(1..5,1..9).
 t(1..30).
 %Mi muovo da X Y a X1 Y1
-muovo(N,X,Y,X1,Y1,1) | nonMuovo(N,1) :- posizione(N,X,Y),mossaPossibile(N,X1,Y1), N>22. %Passando prima neri e poi bianchi e poi al turno successivo invertire
+muovo(N,X,Y,X1,Y1,1) | nonMuovo(N,1) :- posizione(N,X,Y),mossaPossibile(N,X1,Y1), N<=22. %Passando prima neri e poi bianchi e poi al turno successivo invertire
 :- muovo(N,X,Y,X1,Y1,T), muovo(N1,X2,Y2,X3,Y3,T),N != N1.
-mossaObbligata :- muovo(N,X,Y,X1,Y1,T+1).
+mossaObbligata :- muovo(N,X,Y,X1,Y1,1).
 :- not mossaObbligata.
-mangia(M,T) :- muovo(N,Y,X,Y,X1,T),posizione(M,Y,X2),t(T1),not mangia(M,T1),X1 = X - 1,X2=X1-1, M <= 22. %Sinistra
-mangia(M,T) :- muovo(N,Y,X,Y,X1,T),posizione(M,Y,X2),t(T1),not mangia(M,T1),X1 = X + 1,X2=X1+1, M <= 22. %Destra (possiamo fare anche per allontanamento guarda x1 - 1, mettere >=)
 
-mangia(M,T) :- muovo(N,Y,X,Y1,X,T),posizione(M,Y2,X),t(T1),not mangia(M,T1),Y1 = Y - 1,Y2=Y1 - 1, M <= 22. %Sopra
-mangia(M,T) :- muovo(N,Y,X,Y1,X,T),posizione(M,Y2,X),t(T1),not mangia(M,T1),Y1 = Y + 1,Y2=Y1 + 1, M <= 22. %Sotto
 
-mangia(M,T) :- muovo(N,Y,X,Y1,X1,T),posizione(M,Y2,X2),t(T1),not mangia(M,T1),X1 = X - 1,Y1 = Y - 1,X2=X1 - 1,Y2 = Y1 - 1,M <= 22. %Diagonale principale sopra
-mangia(M,T) :- muovo(N,Y,X,Y1,X1,T),posizione(M,Y2,X2),t(T1),not mangia(M,T1),X1 = X + 1,X2=X1+1,Y2 = Y1 - 1, Y1 = Y-1 ,M <= 22. %Diagonale secondaria sopra
-mangia(M,T) :- muovo(N,Y,X,Y1,X1,T),posizione(M,Y2,X2),t(T1),not mangia(M,T1),X1 = X - 1,X2=X1-1,Y2 = Y1 + 1, Y1 = Y+1 ,M <= 22. %Diagonale secondaria sotto
-mangia(M,T) :- muovo(N,Y,X,Y1,X1,T),posizione(M,Y2,X2),t(T1),not mangia(M,T1),X1 = X + 1,Y1 = Y + 1,X2=X1 + 1,Y2 = Y1 + 1, M <= 22. %Diagonale principale sotto
+%posizione(M,Y2,X),t(T1),not mangia(M,T1)
+%mangia(M,T) :- muovo(N,Y,X,Y1,X,T),posizione(M,Y2,X),t(T1),not mangia(M,T1),Y1 = Y + 1,Y2=Y1 + 1, M <= 22. %Sotto
+%mangia(M,T) :- muovo(N,Y,X,Y1,X1,T),posizione(M,Y2,X2),t(T1),not mangia(M,T1),X1 = X - 1,Y1 = Y - 1,X2=X1 - 1,Y2 = Y1 - 1,M <= 22. %Diagonale principale sopra
 
-%mangia(N,M,T) :- muovo(N,X,Y,X1,Y,T),posizione(M,X2,Y,T),not mangiata(M),X1 = X + 1,X2=X1+1, M >= 23. %Diagonale secondaria sotto
+%MangiaCella(Y,X,T) | ... :- MuovoInUnaDirezione()
+mangiaCella(Y,X - 2,T,ovest) | mangiaCella(Y,X+1,T,est) :- muovo(N,Y,X,Y,X - 1,T). %Sinistra
+mangiaCella(Y,X + 2,T,est) | mangiaCella(Y, X - 1,T,ovest) :- muovo(N,Y,X,Y,X + 1,T). %Destra (possiamo fare anche per allontanamento guarda x1 - 1, mettere >=)
 
-:- mangia(M,T),mangia(M1,T),M != M1.
+mangiaCella(Y+2,X,T,sud) | mangiaCella(Y-1 , X , T,nord) :- muovo(N,Y,X,Y + 1,X,T). %Sotto
+mangiaCella(Y+1,X,T,sud) | mangiaCella(Y-2 , X , T,nord) :- muovo(N,Y,X,Y - 1,X,T).  %Sopra
+
+mangiaCella(Y+1,X+1,T,sudEst) | mangiaCella(Y-2 , X-2 , T,nordOvest) :- muovo(N,Y,X,Y - 1,X - 1,T).  %Diagonale principale sopra
+mangiaCella(Y-1,X-1,T,nordOvest) | mangiaCella(Y+2 , X+2 , T,sudEst) :- muovo(N,Y,X,Y + 1,X + 1,T). %Diagonale principale sotto
+
+mangiaCella(Y+1,X-1,T,sudOvest) | mangiaCella(Y-2 , X+2 , T,nordEst) :- muovo(N,Y,X,Y - 1,X + 1,T). %Diagonale secondaria sopra
+mangiaCella(Y-1,X+1,T,nordEst) | mangiaCella(Y+2 , X-2 , T,sudOvest) :- muovo(N,Y,X,Y + 1,X - 1,T). %Diagonale secondaria sotto
+
+mangia(M,T,D) :- mangiaCella(X,Y,T,D),posizione(M,X,Y) , M>22.
+mangia(M1,T,ovest) :- mangia(M,T,ovest),posizione(M,Y,X),posizione(M1,Y,X - 1), M1 > 22. %Mangiate ricorsive a sinistra
+mangia(M1,T,est) :- mangia(M,T,est),posizione(M,Y,X),posizione(M1,Y,X + 1), M1 > 22. %Mangiate ricorsive a destra
+mangia(M1,T,nord) :- mangia(M,T,nord),posizione(M,Y,X),posizione(M1,Y - 1,X), M1 > 22. %Mangiate ricorsive sopra
+mangia(M1,T,sud) :- mangia(M,T,sud),posizione(M,Y,X),posizione(M1,Y + 1,X), M1 > 22. %Mangiate ricorsive sotto
+mangia(M1,T,nordOvest) :- mangia(M,T,nordOvest),posizione(M,Y,X),posizione(M1,Y - 1,X - 1), M1 > 22. %Mangiate ricorsive diagonale principale sopra
+mangia(M1,T,sudEst) :- mangia(M,T,sudEst),posizione(M,Y,X),posizione(M1,Y + 1,X + 1), M1 > 22. %Mangiate ricorsive diagonale principale sotto
+mangia(M1,T,nordEst) :- mangia(M,T,nordEst),posizione(M,Y,X),posizione(M1,Y - 1,X + 1), M1 > 22. %Mangiate ricorsive diagonale secondaria sopra
+mangia(M1,T,sudOvest) :- mangia(M,T,sudOvest),posizione(M,Y,X),posizione(M1,Y + 1,X - 1), M1 > 22. %Mangiate ricorsive diagonale secondaria sopra
+
+
+
+
+
+%muovo(est) | muove(ovest) | ... | nonMuovo()
+%Non posso andare sulle diagonali se non ci sono
+%se mi muovo devo mangiare
+:- mangia(M,T,D),mangia(M1,T,D1),D != D1,M != M1.
 #show muovo/6.
-#show mangia/2.
+#show mangia/3.
+#show mangiaCella/4.
