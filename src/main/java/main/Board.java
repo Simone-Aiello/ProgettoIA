@@ -10,11 +10,13 @@ import java.util.Map;
 public class Board {
     private int TABLE_HEIGHT = 5;
     private int TABLE_WIDTH = 9;
+    private Pair<Integer, Integer> lastDirection = null;
     private Piece[][] cells = new Piece[TABLE_HEIGHT][TABLE_WIDTH];
     private List<Piece> selectable = new ArrayList<>();
     private Piece currentSelected = null;
     private List<Pair<Integer, Integer>> possibleMoves = new ArrayList<>(8);
     private boolean choosingWhatToEat = false;
+    private boolean stoppable = false;
     private Map<Pair<Integer,Integer>,List<Piece>> choose = new HashMap<>();
     private int currentPlayer = Settings.PLAYER_1;
     private void init() {
@@ -31,9 +33,15 @@ public class Board {
                 alternation = alternation == Settings.PLAYER_1 ? Settings.PLAYER_2 : Settings.PLAYER_1;
             }
         }
-        fillSelectable();
+        /*cells[3][2].setType(Settings.PLAYER_2);
+        cells[3][3] = null;
+        cells[1][3] = null;
+        cells[1][4] = null;
+        cells[1][5] = null;
+        cells[3][5].setType(Settings.PLAYER_2);
         cells[4][6] = null;
-        cells[2][3] = null;
+        cells[2][3] = null;*/
+        fillSelectable();
     }
 
     public Board() {
@@ -90,8 +98,13 @@ public class Board {
         return eat;
     }
 
-    private void changeTurn(){
+    public void changeTurn(){
         currentPlayer = currentPlayer == Settings.PLAYER_1 ? Settings.PLAYER_2 : Settings.PLAYER_1;
+        lastDirection = null;
+        stoppable = false;
+        possibleMoves.clear();
+        if(cells[currentSelected.getY()][currentSelected.getX()] != null && currentSelected!= null) cells[currentSelected.getY()][currentSelected.getX()].setSelected(false);
+        currentSelected = null;
         fillSelectable();
     }
     private boolean shouldEat(int x , int y){
@@ -99,11 +112,14 @@ public class Board {
             for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
                 if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) { //Ho aggiunto solo questo controllo
                     if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2) {
-                        if (eatSomething(x, y, i, j)) return true;
+                        if (eatSomething(x, y, i, j) && (lastDirection == null || (!lastDirection.equals(Pair.of(i-x,j-y)) && !lastDirection.equals(Pair.of(x-i,y-j))))) {
+                        	return true;
+                        }
+                        }
+                        //&& (lastDirection == null || lastDirection.equals(Pair.of(i-x,j-y)) || lastDirection.equals(Pair.of(x-i,y-j))
                     }
                 }
             }
-        }
         return false;
     }
 
@@ -125,7 +141,7 @@ public class Board {
             for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
                 if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) {
                     if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2) {
-                        if (eatSomething(x, y, i, j)) {
+                        if (eatSomething(x, y, i, j) && (lastDirection == null || (!lastDirection.equals(Pair.of(i-x,j-y)) && !lastDirection.equals(Pair.of(x-i,y-j))))) {
                             if (!canEat) {
                                 possibleMoves.clear();
                                 canEat = true;
@@ -149,9 +165,9 @@ public class Board {
         return possibleMoves.contains(p);
     }
 
-    private void eat(int newY, int newX, int ydir, int xdir) {
+    private boolean eat(int newY, int newX, int ydir, int xdir) {
         int enemy = Settings.PLAYER_2;
-        //boolean eaten = false;
+        boolean eaten = false;
         if (currentPlayer == Settings.PLAYER_2)  enemy = Settings.PLAYER_1;
         List<Piece> away = new ArrayList<>();
         List<Piece> into = new ArrayList<>();
@@ -159,10 +175,10 @@ public class Board {
         int eatx = newX + xdir;
         int eaty = newY + ydir;
         while (eatx >= 0 && eaty >= 0 && eatx < TABLE_WIDTH && eaty < TABLE_HEIGHT && cells[eaty][eatx] != null && cells[eaty][eatx].getType() == enemy) {
-            //cells[eaty][eatx] = null;
             into.add(cells[eaty][eatx]);
             eatx += xdir;
             eaty += ydir;
+            eaten = true;
         }
         // mangio per allontanamento
         eatx = newX - (xdir * 2);
@@ -171,7 +187,13 @@ public class Board {
             away.add(cells[eaty][eatx]);
             eatx -= xdir;
             eaty -= ydir;
+            eaten = true;
         }
+        
+        if(eaten) {
+        	lastDirection = Pair.of(ydir , xdir);
+        }
+        
         if(away.isEmpty()){
             for(var p : into){
                 cells[p.getY()][p.getX()] = null;
@@ -189,14 +211,12 @@ public class Board {
             choose.put(Pair.of(headAway.getY(),headAway.getX()),away);
             choose.put(Pair.of(headInto.getY(),headInto.getX()),into);
         }
+        return eaten;
     }
 
     private void move(int i, int j, int i1, int j1) {
         cells[i1][j1] = new Piece(i1, j1, cells[i][j].getType());
-        cells[i][j] = null;
-        eat(i1, j1, i1 - i, j1 - j);
-        changeTurn();
-
+        cells[i][j] = null;  
     }
 
     public void select(int x, int y) {
@@ -209,6 +229,9 @@ public class Board {
             }
             choose.clear();
             choosingWhatToEat = false;
+            currentSelected = cells[x][y];
+            fillSelectable();
+            //changeTurn();
             return;
         }
         for (int i = 0; i < TABLE_HEIGHT; i++) {
@@ -231,12 +254,25 @@ public class Board {
                 } else if (i == x && j == y) {
                     if (canMove(x, y)) {
                         move(currentSelected.getY(), currentSelected.getX(), x, y);
+                        if(!eat(x, y, x - currentSelected.getY(), y - currentSelected.getX())) changeTurn();
+						else if (shouldEat(x,y)) {
+                        	currentSelected = cells[x][y];
+                        	selectable.clear();
+                        	selectable.add(currentSelected);
+                        	stoppable = true;
+                        }
+                        else  changeTurn();
                     }
                     possibleMoves.clear();
                 }
             }
         }
     }
+    
+    public List<Piece> getSelectable() {
+		return selectable;
+	}
+    
 
     public List<Pair<Integer, Integer>> getPossibleMoves() {
         return possibleMoves;
@@ -245,4 +281,8 @@ public class Board {
     public Map<Pair<Integer, Integer>, List<Piece>> getChoose() {
         return choose;
     }
+    
+    public boolean isStoppable() {
+		return stoppable;
+	}
 }
