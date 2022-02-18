@@ -22,8 +22,6 @@ public class BoardController extends MouseAdapter {
                 int coordY = i*panel.getCellDimension() + panel.getPaddingY();
                 int coordX = j*panel.getCellDimension() + panel.getPaddingX();
                 if(x<=coordX+27 && x>=coordX-27 && y<=coordY+27 && y>=coordY-27){
-                    System.out.println(coordY+" " + coordX);
-                    System.out.println(i + " " + j);
                     board.select(i, j);
                     panel.update();
                     return;

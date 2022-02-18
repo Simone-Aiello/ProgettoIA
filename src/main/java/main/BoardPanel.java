@@ -44,6 +44,21 @@ public class BoardPanel extends JPanel {
                 }
             }
         }
+        var possibleMove = b.getBoard().getPossibleMoves();
+        g.setColor(Color.YELLOW);
+        for(int i = 0; i < possibleMove.size();i++){
+            int y = possibleMove.get(i).getLeft();
+            int x = possibleMove.get(i).getRight();
+            g.fillOval(x*cellDimension - 27 + paddingX,y*cellDimension - 27 + paddingY,54,54);
+        }
+        var eatChooses = b.getBoard().getChoose();
+        g.setColor(new Color(191, 64, 191));
+        for(var c : eatChooses.entrySet()){
+            var key = c.getKey();
+            int y = key.getLeft();
+            int x = key.getRight();
+            g.fillOval(x*cellDimension - 27 + paddingX,y*cellDimension - 27 + paddingY,54,54);
+        }
     }
     public void update(){
         this.repaint();
