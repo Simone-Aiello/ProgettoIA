@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 pedina(1..44).
 mossaPossibile(20,3,5).
 mossaPossibile(13,3,5).
@@ -58,16 +57,18 @@ cella(1..5,1..9).
 t(1..30).
 %Mi muovo da X Y a X1 Y1
 muovo(N,X,Y,X1,Y1,1) | nonMuovo(N,1) :- posizione(N,X,Y),mossaPossibile(N,X1,Y1), N<=22. %Passando prima neri e poi bianchi e poi al turno successivo invertire
+%Non è possibile muovere due pedine nello stesso turno
 :- muovo(N,X,Y,X1,Y1,T), muovo(N1,X2,Y2,X3,Y3,T),N != N1.
+%devo fare almeno una mossa
 mossaObbligata :- muovo(N,X,Y,X1,Y1,1).
 :- not mossaObbligata.
-
 
 %posizione(M,Y2,X),t(T1),not mangia(M,T1)
 %mangia(M,T) :- muovo(N,Y,X,Y1,X,T),posizione(M,Y2,X),t(T1),not mangia(M,T1),Y1 = Y + 1,Y2=Y1 + 1, M <= 22. %Sotto
 %mangia(M,T) :- muovo(N,Y,X,Y1,X1,T),posizione(M,Y2,X2),t(T1),not mangia(M,T1),X1 = X - 1,Y1 = Y - 1,X2=X1 - 1,Y2 = Y1 - 1,M <= 22. %Diagonale principale sopra
 
 %MangiaCella(Y,X,T) | ... :- MuovoInUnaDirezione()
+%se mi muovo a sinistra, allora mangio o a ovest -2 o a est +1 (scelgo quale mangiare)
 mangiaCella(Y,X - 2,T,ovest) | mangiaCella(Y,X+1,T,est) :- muovo(N,Y,X,Y,X - 1,T). %Sinistra
 mangiaCella(Y,X + 2,T,est) | mangiaCella(Y, X - 1,T,ovest) :- muovo(N,Y,X,Y,X + 1,T). %Destra (possiamo fare anche per allontanamento guarda x1 - 1, mettere >=)
 
@@ -103,121 +104,10 @@ d(est). d(ovest).
 d(nord). d(sud). d(nordEst). d(sudEst). d(sudOvest). d(nordOvest).
 :- mangia(M,T,D),mangia(M1,T,D1),D != D1,M != M1.
 :-mangia(M,T,_),mangia(M,T1,_) , T!=T1.
+%non è possibile muovermi su una posizione se prima non è stata mangiata 
 :- muovo(N,Y,X,Y1,X1,T),posizione(N1,Y1,X1) ,t(T1), d(D), T1<T ,not mangia(N1,T1,D).
 :- muovo(_,_,_,_,_,T),not homangiato(T), T != 1.
 #show muovo/6.
 #show mangia/3.
 #show mangiaCella/4.
 #show nonMuovo/2.
-=======
-pedina(1..44).
-mossaPossibile(20,3,5).
-mossaPossibile(13,3,5).
-mossaPossibile(14,3,5).
-mossaPossibile(15,3,5).
-
-mossaPossibile(35,3,5).
-mossaPossibile(37,3,5).
-mossaPossibile(36,3,5).
-mossaPossibile(43,3,5).
-posizione(23,1,1).
-posizione(24,1,2).
-posizione(25,1,3).
-posizione(26,1,4).
-posizione(27,1,5).
-posizione(28,1,6).
-posizione(29,1,7).
-posizione(30,1,8).
-posizione(31,1,9).
-posizione(32,2,1).
-posizione(33,2,2).
-posizione(34,2,3).
-%posizione(35,2,4).
-posizione(36,2,5).
-%posizione(37,2,6).
-posizione(38,2,7).
-posizione(39,2,8).
-posizione(40,2,9).
-posizione(41,3,1).
-posizione(42,3,3).
-posizione(43,3,6).
-posizione(44,3,8).
-%BIANCHE
-posizione(1,5,1).
-posizione(2,5,2).
-posizione(3,5,3).
-posizione(4,5,4).
-posizione(5,5,5).
-posizione(6,5,6).
-posizione(7,5,7).
-posizione(8,5,8).
-posizione(9,5,9).
-posizione(10,4,1).
-posizione(11,4,2).
-posizione(12,4,3).
-posizione(13,4,4).
-posizione(14,4,5).
-posizione(15,4,6).
-posizione(16,4,7).
-posizione(17,4,8).
-posizione(18,4,9).
-posizione(19,3,2).
-posizione(20,3,4).
-posizione(21,3,7).
-posizione(22,3,9).
-cella(1..5,1..9).
-t(1..30).
-%Mi muovo da X Y a X1 Y1
-muovo(N,X,Y,X1,Y1,1) | nonMuovo(N,1) :- posizione(N,X,Y),mossaPossibile(N,X1,Y1), N<=22. %Passando prima neri e poi bianchi e poi al turno successivo invertire
-:- muovo(N,X,Y,X1,Y1,T), muovo(N1,X2,Y2,X3,Y3,T),N != N1.
-mossaObbligata :- muovo(N,X,Y,X1,Y1,1).
-:- not mossaObbligata.
-
-
-%posizione(M,Y2,X),t(T1),not mangia(M,T1)
-%mangia(M,T) :- muovo(N,Y,X,Y1,X,T),posizione(M,Y2,X),t(T1),not mangia(M,T1),Y1 = Y + 1,Y2=Y1 + 1, M <= 22. %Sotto
-%mangia(M,T) :- muovo(N,Y,X,Y1,X1,T),posizione(M,Y2,X2),t(T1),not mangia(M,T1),X1 = X - 1,Y1 = Y - 1,X2=X1 - 1,Y2 = Y1 - 1,M <= 22. %Diagonale principale sopra
-
-%MangiaCella(Y,X,T) | ... :- MuovoInUnaDirezione()
-mangiaCella(Y,X - 2,T,ovest) | mangiaCella(Y,X+1,T,est) :- muovo(N,Y,X,Y,X - 1,T). %Sinistra
-mangiaCella(Y,X + 2,T,est) | mangiaCella(Y, X - 1,T,ovest) :- muovo(N,Y,X,Y,X + 1,T). %Destra (possiamo fare anche per allontanamento guarda x1 - 1, mettere >=)
-
-mangiaCella(Y+2,X,T,sud) | mangiaCella(Y-1 , X , T,nord) :- muovo(N,Y,X,Y + 1,X,T). %Sotto
-mangiaCella(Y+1,X,T,sud) | mangiaCella(Y-2 , X , T,nord) :- muovo(N,Y,X,Y - 1,X,T).  %Sopra
-
-mangiaCella(Y+1,X+1,T,sudEst) | mangiaCella(Y-2 , X-2 , T,nordOvest) :- muovo(N,Y,X,Y - 1,X - 1,T).  %Diagonale principale sopra
-mangiaCella(Y-1,X-1,T,nordOvest) | mangiaCella(Y+2 , X+2 , T,sudEst) :- muovo(N,Y,X,Y + 1,X + 1,T). %Diagonale principale sotto
-
-mangiaCella(Y+1,X-1,T,sudOvest) | mangiaCella(Y-2 , X+2 , T,nordEst) :- muovo(N,Y,X,Y - 1,X + 1,T). %Diagonale secondaria sopra
-mangiaCella(Y-1,X+1,T,nordEst) | mangiaCella(Y+2 , X-2 , T,sudOvest) :- muovo(N,Y,X,Y + 1,X - 1,T). %Diagonale secondaria sotto
-
-mangia(M,T,D) :- mangiaCella(X,Y,T,D),posizione(M,X,Y) , M>22.
-mangia(M1,T,ovest) :- mangia(M,T,ovest),posizione(M,Y,X),posizione(M1,Y,X - 1), M1 > 22. %Mangiate ricorsive a sinistra
-mangia(M1,T,est) :- mangia(M,T,est),posizione(M,Y,X),posizione(M1,Y,X + 1), M1 > 22. %Mangiate ricorsive a destra
-mangia(M1,T,nord) :- mangia(M,T,nord),posizione(M,Y,X),posizione(M1,Y - 1,X), M1 > 22. %Mangiate ricorsive sopra
-mangia(M1,T,sud) :- mangia(M,T,sud),posizione(M,Y,X),posizione(M1,Y + 1,X), M1 > 22. %Mangiate ricorsive sotto
-mangia(M1,T,nordOvest) :- mangia(M,T,nordOvest),posizione(M,Y,X),posizione(M1,Y - 1,X - 1), M1 > 22. %Mangiate ricorsive diagonale principale sopra
-mangia(M1,T,sudEst) :- mangia(M,T,sudEst),posizione(M,Y,X),posizione(M1,Y + 1,X + 1), M1 > 22. %Mangiate ricorsive diagonale principale sotto
-mangia(M1,T,nordEst) :- mangia(M,T,nordEst),posizione(M,Y,X),posizione(M1,Y - 1,X + 1), M1 > 22. %Mangiate ricorsive diagonale secondaria sopra
-mangia(M1,T,sudOvest) :- mangia(M,T,sudOvest),posizione(M,Y,X),posizione(M1,Y + 1,X - 1), M1 > 22. %Mangiate ricorsive diagonale secondaria sopra
-
-%muovo(N,Y,X,Y,X - 1,T).
-%ovest est sud nord sudOvest sudEst nordOvest nordEst -> Posso muovermi se l ultima mossa che ho fatto mi porta a mangiare                                                                                                                                  muovo(14,4,5,4,5,1),mangia(_,1,_), T = 1.
-%Da aggiustare questa regola, includere nel guess alcuni vincoli, testare t < 5, t < 20
-muovo(N,Y,X,Y,X - 1,T+1) | muovo(N,Y,X,Y,X + 1,T+1) | muovo(N,Y,X,Y + 1,X,T+1) | muovo(N,Y,X,Y - 1,X,T+1) | muovo(N,Y,X,Y + 1,X - 1,T+1) | muovo(N,Y,X,Y + 1,X + 1,T+1) | muovo(N,Y,X,Y - 1,X - 1,T+1) | muovo(N,Y,X,Y - 1,X + 1,T+1) | nonMuovo(N,T+1) :- muovo(N,_,_,Y,X,T),homangiato(T),T = #max{S :homangiato(S)}.
-homangiato(T):-mangia(_,T,_).
-
-%muovo(est) | muove(ovest) | ... | nonMuovo()
-%Non posso andare sulle diagonali se non ci sono
-%se mi muovo devo mangiare
-d(est). d(ovest).
-d(nord). d(sud). d(nordEst). d(sudEst). d(sudOvest). d(nordOvest).
-:- mangia(M,T,D),mangia(M1,T,D1),D != D1,M != M1.
-:-mangia(M,T,_),mangia(M,T1,_) , T!=T1.
-:- muovo(N,Y,X,Y1,X1,T),posizione(N1,Y1,X1) ,t(T1), d(D), T1<T ,not mangia(N1,T1,D).
-:- muovo(_,_,_,_,_,T),not homangiato(T), T != 1.
-#show muovo/6.
-#show mangia/3.
-#show mangiaCella/4.
-#show nonMuovo/2.
->>>>>>> c1f4568b866cdd81dd0af0a7b3c5eaee92c07266
