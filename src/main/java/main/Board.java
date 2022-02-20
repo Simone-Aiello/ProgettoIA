@@ -122,16 +122,38 @@ public class Board {
             }
         return false;
     }
-
+    
+    private boolean moveable(int x , int y) {
+    	  for (int i = x - 1; i < x + 2 && i < TABLE_HEIGHT; i++) {
+              for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
+                  if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) {
+                    return true;
+                  }
+              }
+          }
+    	  return false;
+    }
+    
     private void fillSelectable(){
         selectable.clear();
+        List<Piece> moveable = new ArrayList<Piece>();
         for(int i = 0 ; i<TABLE_HEIGHT;++i){
             for(int j = 0;j<TABLE_WIDTH;++j){
-                if(cells[i][j]!=null && cells[i][j].getType()==currentPlayer && shouldEat(i,j)){
-                    selectable.add(cells[i][j]);
+                if(cells[i][j]!=null && cells[i][j].getType()==currentPlayer ){
+                	if(shouldEat(i,j))
+                		selectable.add(cells[i][j]);
+                	if(selectable.isEmpty()) {
+                		if(moveable(i, j)) {
+                			moveable.add(cells[i][j]);
+                		}
+                	}
                 }
             }
         }
+        if(selectable.isEmpty()) {
+        	selectable = moveable;
+        }
+        
     }
 
     private void addPossibleMoves(int x, int y) {
@@ -229,8 +251,10 @@ public class Board {
             }
             choose.clear();
             choosingWhatToEat = false;
-            currentSelected = cells[x][y];
-            fillSelectable();
+            if(!stoppable)
+            	changeTurn();
+            //currentSelected = cells[x][y];
+            //fillSelectable();
             //changeTurn();
             return;
         }
@@ -261,7 +285,8 @@ public class Board {
                         	selectable.add(currentSelected);
                         	stoppable = true;
                         }
-                        else  changeTurn();
+                        else if(!choosingWhatToEat) changeTurn();
+                        else selectable.clear();
                     }
                     possibleMoves.clear();
                 }
