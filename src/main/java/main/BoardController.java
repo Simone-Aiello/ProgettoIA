@@ -17,11 +17,13 @@ public class BoardController extends MouseAdapter implements Callback {
     private Board board;
     private BoardPanel panel;
     private JButton salta; 
+    private long currentTime;
 
     public BoardController(Board board, BoardPanel panel, JButton salta ) {
         this.board = board;
         this.panel = panel;
         this.salta = salta;
+        currentTime = System.currentTimeMillis();
         salta.setVisible(false);
         Rocco.getInstance().init("lib/dlv2.exe","final20.txt",this);
     }
@@ -29,11 +31,12 @@ public class BoardController extends MouseAdapter implements Callback {
     @Override
     public void mouseClicked(MouseEvent e) {
         super.mouseClicked(e);
+        currentTime = System.currentTimeMillis();
         if(e.getSource() instanceof JButton) {
             board.changeTurn();
             salta.setVisible(false);
         }
-        else {
+        else if(board.getCurrentPlayer()==Settings.PLAYER_1){
             int x = e.getX();
             int y = e.getY();
             for (int i = 0; i < board.getTABLE_HEIGHT(); ++i) {
@@ -72,9 +75,19 @@ public class BoardController extends MouseAdapter implements Callback {
 
     @Override
     public void callback(Output output) {
+    	if(System.currentTimeMillis()-currentTime<3000)
+			try {
+				Thread.sleep(3000-System.currentTimeMillis()+currentTime);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
         AnswerSets as = (AnswerSets) output;
         var answerSets = as.getOptimalAnswerSets();
         Random r = new Random();
+        if(answerSets.isEmpty()) {
+        	System.out.println("Partita finita");
+        	return;
+        }
         int index = r.nextInt(answerSets.size());
         var optimalAs = answerSets.get(index);
         List<String[]> moves = new ArrayList<>();

@@ -354,11 +354,10 @@ public class Board {
 		return stoppable;
 	}
 
-    public void applyIAMoves(List<String[]> moves, List<String[]> eat) {
-
-        //int idx = Integer.parseInt(e[0]);
-        //idx 1 time 0
-    }
+    public int getCurrentPlayer() {
+		return currentPlayer;
+	}
+    
 
     public void remove(int index) {
         for(int i = 0; i < TABLE_HEIGHT;i++){

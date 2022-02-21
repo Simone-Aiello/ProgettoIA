@@ -47,9 +47,11 @@ public class BoardPanel extends JPanel {
 						g.setColor(Color.RED);
 					}
 					g.fillOval(j * cellDimension - 27 + paddingX, i * cellDimension - 27 + paddingY, 54, 54);
-					g.setColor(Color.CYAN);
+					g.setColor(Color.BLACK);
+					if(	b.getBoard().getCells()[i][j].getType() == Settings.PLAYER_2)
+							g.setColor(Color.WHITE);
 					g.setFont(new Font("TimesRoman", Font.PLAIN, 25));
-					g.drawString(""+b.getBoard().getCells()[i][j].getIndex(),j * cellDimension - 27 + paddingX + 20,i * cellDimension - 27 + paddingY + 20);
+					g.drawString(""+b.getBoard().getCells()[i][j].getIndex(),j * cellDimension - 30 + paddingX + 20,i * cellDimension - 27 + paddingY + 30);
 				}
 			}
 		}

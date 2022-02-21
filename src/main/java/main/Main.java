@@ -11,7 +11,7 @@ public class Main {
         JPanel bottom = new JPanel();
         JButton salta = new JButton("Salta");
         bottom.add(salta);
-        BoardController controller = new BoardController(game,panel , salta);
+        BoardController controller = new BoardController(game,panel , salta);     
         panel.setController(controller);
         JFrame f = new JFrame();
         f.add(panel , BorderLayout.CENTER);

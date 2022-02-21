@@ -146,7 +146,14 @@ celleMangiate(M,T):-mangioOpz(M,_,T),mossa(N,Y1,X1,Y,X,T).
 
 celleMangiate(M,T):-mossa(N,Y1,X1,Y,X,T), DIRY = Y-Y1, DIRX=X-X1 , mangioOpz(_,K,T) ,celleMangiate(M1,T), not celleMangiate(M1,T-1),posizione(M1,YY,XX), posizione(M,YY+DIRY*K , XX+DIRX*K), not celleMangiate(M,T-1) , M>22. 
 
-mossa(N,Y1,X1,Y,X,T):-muovoOpz(N,Y1,X1,Y,X,T), not almenoDueMuovo(T), T<12 .
+mossa(N,Y1,X1,Y,X,T):-muovoOpz(N,Y1,X1,Y,X,T), not almenoDueMuovo(T) , T<12 .
+
+%mi impediscono di muovermi sulle posizioni sulle quali sono già stato e di muovermi nella stessa direzione della mossa precedente
+:-mossa(N,Y1,X1,Y,X,T) ,posizione(N,Y,X).
+:-mossa(N,Y1,X1,Y,X,T) , mossa(N,Y2,X2,Y,X,T1),T!=T1.
+:-mossa(N,Y1,X1,Y,X,T), mossa(N,Y,X,Y2,X2,T+1),Y-Y1=Y2-Y , X-X1!=X2-X.
+:-mossa(N,Y1,X1,Y,X,T), mossa(N,Y,X,Y2,X2,T+1),Y-Y1!=Y2-Y , X-X1=X2-X.
+:-mossa(N,Y1,X1,Y,X,T), mossa(N,Y,X,Y2,X2,T+1),Y-Y1=L ,Y2-Y = L , X-X1=J , X2-X=J.
 
 %#show muovo/5.
 %#show mangio/2.
