@@ -1,19 +1,31 @@
 package main;
 
+import it.unical.mat.embasp.languages.Id;
+import it.unical.mat.embasp.languages.Param;
+
 import java.awt.*;
 
+@Id("posizione")
 public class Piece {
+    @Param(0)
+    private int index;
+    @Param(2)
     private int x;
+    @Param(1)
     private int y;
     private int type;
     private Rectangle hitbox;
     private int hitboxWidth = 54;
     private int hitboxHeight = 54;
     boolean selected;
-    public Piece(int y, int x, int type) {
+
+    public Piece() {}
+
+    public Piece(int y, int x, int type, int index) {
         this.x = x;
         this.y = y;
         this.type = type;
+        this.index = index;
         hitbox = new Rectangle(x,y,hitboxWidth,hitboxHeight);
     }
 
@@ -28,13 +40,18 @@ public class Piece {
     public int getType() {
         return type;
     }
-
-    public int getX() {
+    public int getNormalX(){
         return x;
+    }
+    public int getNormalY(){
+        return y;
+    }
+    public int getX() {
+        return x + 1;
     }
 
     public int getY() {
-        return y;
+        return y + 1;
     }
 
     public void setType(int type) {
@@ -55,5 +72,13 @@ public class Piece {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

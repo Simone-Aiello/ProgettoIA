@@ -1,0 +1,164 @@
+pedina(1..44).
+%mossaPossibile(20,3,5,43).
+%mossaPossibile(20,3,5,42).
+%mossaPossibile(13,3,5,37).
+%mossaPossibile(14,3,5,36).
+%mossaPossibile(15,3,5,35).
+%mossaPossibile(20,3,5).
+%mossaPossibile(13,3,5).
+%mossaPossibile(14,3,5).
+%mossaPossibile(15,3,5).
+occupata(Y,X):-posizione(_,Y,X).
+%posizione(23,1,1).
+%posizione(24,1,2).
+%posizione(25,1,3).
+%posizione(26,1,4).
+%posizione(27,1,5).
+%posizione(28,1,6).
+%posizione(29,1,7).
+%posizione(30,1,8).
+%posizione(31,1,9).
+%posizione(32,2,1).
+%posizione(33,2,2).
+%posizione(34,2,3).
+%posizione(35,2,4).
+%posizione(36,2,5).
+%posizione(37,2,6).
+%posizione(38,2,7).
+%posizione(39,2,8).
+%posizione(40,2,9).
+%posizione(41,3,1).
+%posizione(42,3,3).
+%posizione(43,3,6).
+%posizione(44,3,8).
+%BIANCHE
+%posizione(1,5,1).
+%posizione(2,5,2).
+%posizione(3,5,3).
+%posizione(4,5,4).
+%posizione(5,5,5).
+%posizione(6,5,6).
+%posizione(7,5,7).
+%posizione(8,5,8).
+%posizione(9,5,9).
+%posizione(10,4,1).
+%posizione(11,4,2).
+%posizione(12,4,3).
+%posizione(13,4,4).
+%posizione(14,4,5).
+%posizione(15,4,6).
+%posizione(16,4,7).
+%posizione(17,4,8).
+%posizione(18,4,9).
+%posizione(19,3,2).
+%posizione(20,3,4).
+%posizione(21,3,7).
+%posizione(22,3,9).
+cella(1..5,1..9).
+t(1..20).
+d(est). d(ovest).
+d(nord). d(sud). d(nordEst). d(sudEst). d(sudOvest). d(nordOvest).
+
+%generiamo tutte le mangiate possibili
+%genera tutte le possibili mangiate per avvicinamento
+mangiataPossibile(N,Y,X,M,1):-mossaPossibile(N,Y,X), posizione(N,Y1,X1), DIRX=X-X1 , DIRY=Y-Y1, posizione(M,Y+DIRY,X+DIRX) , M>22.
+%genera tutte le possibile mangiate per allontanamento
+mangiataPossibile(N,Y,X,M,-1):-mossaPossibile(N,Y,X), posizione(N,Y1,X1), DIRX=X-X1 , DIRY=Y-Y1, posizione(M,Y-2*DIRY,X-2*DIRX) , M>22.
+
+%scegliamo chi mangio data una mangiata possibile
+mangio(M,K)|nonMangio(M,K):-mangiataPossibile(N,Y,X,M,K).
+:-mangio(M,_),mangio(M1,_),M!=M1.
+
+%devo  mangiare ALMENO UNA VOLTA SE POSSO MANGIARE
+:-#count{K: mangio(K,_)}!=1 , mangioObbligato.
+
+%se posso mangiare, allora devo mangiare
+mangioObbligato:-mangiataPossibile(_,_,_,_,_).
+
+%se ho deciso di mangiare M , allora mi muovo nella direzione di M che ho scelto
+muovo(N,Y1,X1,Y,X)|nonMuovo(N,Y1,X1,Y,X):- posizione(N,Y1,X1) , mangio(M,K), mangiataPossibile(N,Y,X,M,K).
+
+%se non posso mangiare nulla, mi muovo senza mangiare in una posizione possibile
+muovo(N,Y1,X1,Y,X)|nonMuovo(N,Y1,X1,Y,X) :- mossaPossibile(N,Y,X) , posizione(N,Y1,X1) , not mangioObbligato.
+
+almenoDueMuovoIniziali:-#count{N,Y,X: muovo(N,Y1,X1,Y,X)}>1.
+%Sono obbligato a muovermi una sola volta all inizio
+:-#count{N,Y,X: muovo(N,Y1,X1,Y,X)}!=1.
+
+%considero tutte le celle che HO MANGIATO comprese quelle in fila
+celleMangiate(M,1):-mangio(M,_).
+
+celleMangiate(M,1):-muovo(N,Y1,X1,Y,X), DIRY = Y-Y1, DIRX=X-X1 , mangio(_,K) ,celleMangiate(M1,1),posizione(M1,YY,XX), posizione(M,YY+DIRY*K , XX+DIRX*K) , M>22. 
+
+mossa(N,Y1,X1,Y,X,1):-muovo(N,Y1,X1,Y,X), not almenoDueMuovoIniziali.
+
+
+%mosse opzionali data la cella che abbiamo deciso di muovere 
+mosseOpzionali(N,Y,X,Y,X+1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T), not occupata(Y,X+1),cella(Y,X+1).
+mosseOpzionali(N,Y,X,Y,X+1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T), celleMangiate(M,T1),T1<T, posizione(M,Y,X+1).
+
+mosseOpzionali(N,Y,X,Y+1,X,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),not occupata(Y+1,X),cella(Y+1,X).
+mosseOpzionali(N,Y,X,Y+1,X,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),celleMangiate(M,T1),T1<T, posizione(M,Y+1,X).
+
+mosseOpzionali(N,Y,X,Y,X-1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),not occupata(Y,X-1),cella(Y,X-1).
+mosseOpzionali(N,Y,X,Y,X-1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),celleMangiate(M,T1),T1<T, posizione(M,Y,X-1).
+
+mosseOpzionali(N,Y,X,Y-1,X,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),not occupata(Y-1,X),cella(Y-1,X).
+mosseOpzionali(N,Y,X,Y-1,X,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),celleMangiate(M,T1),T1<T, posizione(M,Y-1,X).
+
+mosseOpzionali(N,Y,X,Y+1,X+1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),not occupata(Y+1,X+1),cella(Y+1,X+1), &mod(Y,2;Z) , &mod(X,2;K) , Z=K.
+mosseOpzionali(N,Y,X,Y+1,X+1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),celleMangiate(M,T1),T1<T, posizione(M,Y+1,X+1), &mod(Y,2;Z) , &mod(X,2;K) , Z=K.
+
+mosseOpzionali(N,Y,X,Y+1,X-1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T), not occupata(Y+1,X-1),cella(Y+1,X-1), &mod(Y,2;Z) , &mod(X,2;K) , Z=K.
+mosseOpzionali(N,Y,X,Y+1,X-1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),celleMangiate(M,T1),T1<T, posizione(M,Y+1,X-1), &mod(Y,2;Z) , &mod(X,2;K) , Z=K.
+
+mosseOpzionali(N,Y,X,Y-1,X+1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),not occupata(Y-1,X+1),cella(Y-1,X+1), &mod(Y,2;Z) , &mod(X,2;K) , Z=K.
+mosseOpzionali(N,Y,X,Y-1,X+1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),celleMangiate(M,T1),T1<T, posizione(M,Y-1,X+1), &mod(Y,2;Z) , &mod(X,2;K) , Z=K.
+
+mosseOpzionali(N,Y,X,Y-1,X-1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T), not occupata(Y-1,X-1),cella(Y-1,X-1), &mod(Y,2;Z) , &mod(X,2;K) , Z=K.
+mosseOpzionali(N,Y,X,Y-1,X-1,T+1):- mangioObbligato,mossa(N,Y1,X1,Y,X,T),celleMangiate(M,T1),T1<T, posizione(M,Y-1,X-1), &mod(Y,2;Z) , &mod(X,2;K) , Z=K.
+
+celleMangiate(M,T1):-mosseOpzionali(_,_,_,_,_,T1), celleMangiate(M,T),T<T1.
+
+%genera tutte le possibili mangiate per avvicinamento
+mangiateOpzionali(N, Y , X , M, 1 ,T):- mosseOpzionali(N,Y1,X1,Y,X, T) , DIRX=X-X1 , DIRY=Y-Y1, posizione(M,L,B), L=Y+DIRY , B=X+DIRX , not celleMangiate(M,T-1) , M>22.
+
+%genera tutte le possibile mangiate per allontanamento
+mangiateOpzionali(N, Y , X , M , -1 , T):- mosseOpzionali(N,Y1,X1,Y,X, T) , DIRX=X-X1 , DIRY=Y-Y1, posizione(M,Y-L, X-B), L=2*DIRY , B=2*DIRX , not celleMangiate(M,T-1),M>22.
+
+%scelgo se mangiare o meno fra le mangiate opzionali
+mangioOpz(M,K,T) | nonMangioOpz(M,K,T):-mangiateOpzionali(N,Y,X,M,K, T).
+
+almenoDue(T):-mangioOpz(M,_,T),mangioOpz(M1,_,T),M!=M1.
+:-t(T),almenoDue(T).
+
+%non posso mangiare due contemporaneamente
+:-mangioOpz(M,_,T), mangioOpz(M1,_,T), M!=M1.
+
+%se ho deciso di mangiare M , allora mi muovo nella direzione di M che ho scelto
+muovoOpz(N,Y1,X1,Y,X,T)|nonMuovoOpz(N,Y1,X1,Y,X,T):- mangioOpz(M,K,T), not almenoDue(T) , mangiateOpzionali(N,Y,X,M,K, T), mossa(N,_,_,Y1,X1,T-1).
+
+almenoDueMuovo(T):-muovoOpz(N,Y1,X1,Y,X,T), muovoOpz(N,Y1,X1,Y4,X4,T),Y!=Y4.
+almenoDueMuovo(T):-muovoOpz(N,Y1,X1,Y,X,T), muovoOpz(N,Y1,X1,Y4,X4,T),X!=X4.
+:-t(T),almenoDueMuovo(T).
+
+celleMangiate(M,T):-mangioOpz(M,_,T),mossa(N,Y1,X1,Y,X,T).
+
+celleMangiate(M,T):-mossa(N,Y1,X1,Y,X,T), DIRY = Y-Y1, DIRX=X-X1 , mangioOpz(_,K,T) ,celleMangiate(M1,T), not celleMangiate(M1,T-1),posizione(M1,YY,XX), posizione(M,YY+DIRY*K , XX+DIRX*K), not celleMangiate(M,T-1) , M>22. 
+
+mossa(N,Y1,X1,Y,X,T):-muovoOpz(N,Y1,X1,Y,X,T), not almenoDueMuovo(T), T<12 .
+
+%#show muovo/5.
+%#show mangio/2.
+#show celleMangiate/2.
+#show mossa/6.
+%#show muovoOpz/6.
+%#show mangioOpz/3.
+%#show mosseOpzionali/6.
+%#show mangiateOpzionali/6.
+%se posizione(A,B,C) not cella mangiata 
+%aggiungere T in celle Mangiate mossa(N,Y1,X1,Y,X,T):-muovoOpz(N,Y1,X1,Y,X,T),#count{N2,Y12,X12,Y2,X2,T : muovoOpz(N2,Y12,X12,Y2,X2,T)} =1.
+
+eaten(A):-celleMangiate(A,_).
+:~pedina(A),not eaten(A).[1@1,A]
+ 

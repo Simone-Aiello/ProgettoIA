@@ -30,7 +30,7 @@ public class BoardPanel extends JPanel {
 		}
 		g.setColor(Color.orange);
 		for(var p : b.getBoard().getSelectable()) {
-			g.fillOval(p.getX() * cellDimension - 29 + paddingX, p.getY() * cellDimension - 29 + paddingY, 58, 58);
+			g.fillOval(p.getNormalX() * cellDimension - 29 + paddingX, p.getNormalY() * cellDimension - 29 + paddingY, 58, 58);
 		}
 		for (int i = 0; i < b.getBoard().getTABLE_HEIGHT(); i++) {
 			for (int j = 0; j < b.getBoard().getTABLE_WIDTH(); j++) {
@@ -47,6 +47,9 @@ public class BoardPanel extends JPanel {
 						g.setColor(Color.RED);
 					}
 					g.fillOval(j * cellDimension - 27 + paddingX, i * cellDimension - 27 + paddingY, 54, 54);
+					g.setColor(Color.CYAN);
+					g.setFont(new Font("TimesRoman", Font.PLAIN, 25));
+					g.drawString(""+b.getBoard().getCells()[i][j].getIndex(),j * cellDimension - 27 + paddingX + 20,i * cellDimension - 27 + paddingY + 20);
 				}
 			}
 		}

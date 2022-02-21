@@ -1,5 +1,6 @@
 package main;
 
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,7 +10,7 @@ public class Main {
         Board game = new Board();
         JPanel bottom = new JPanel();
         JButton salta = new JButton("Salta");
-        bottom.add(salta);     
+        bottom.add(salta);
         BoardController controller = new BoardController(game,panel , salta);
         panel.setController(controller);
         JFrame f = new JFrame();
