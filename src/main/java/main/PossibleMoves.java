@@ -12,13 +12,14 @@ public class PossibleMoves {
     @Param(2)
     private int x;
     @Param(3)
-    private int turn = 1;
+    private int turn;
     public PossibleMoves() {}
 
     public PossibleMoves(int index, int y, int x) {
         this.index = index;
         this.y = y;
         this.x = x;
+        this.turn = 1;
     }
 
     public int getIndex() {

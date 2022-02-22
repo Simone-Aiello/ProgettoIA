@@ -94,8 +94,7 @@ public class BoardController extends MouseAdapter implements Callback {
         List<String[]> eat = new ArrayList<>();
         for(String s : optimalAs.getAnswerSet()){
             System.out.println(s);
-            if(s.contains("mossa")){
-                System.out.println(s);
+            if(s.contains("mossa(")){
                 s = s.replace("mossa","");
                 s = s.replace("(","");
                 s = s.replace(")","");
@@ -103,14 +102,11 @@ public class BoardController extends MouseAdapter implements Callback {
                 moves.add(splitted);
             }
             if(s.contains("celleMangiate")){
-                s = s.replace("celleMangiate","");
+                s = s.replace("celleMangiate(","");
                 s = s.replace("(","");
                 s = s.replace(")","");
                 String [] split = s.split(",");
                 eat.add(split);
-            }
-            if(s.contains("posizione")){
-                System.out.println(s);
             }
         }
         for(String[] m : moves){
