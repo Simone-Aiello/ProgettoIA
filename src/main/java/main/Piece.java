@@ -13,6 +13,8 @@ public class Piece {
     private int x;
     @Param(1)
     private int y;
+    @Param(3)
+    private int turn;
     private int type;
     private Rectangle hitbox;
     private int hitboxWidth = 54;
@@ -26,6 +28,7 @@ public class Piece {
         this.y = y;
         this.type = type;
         this.index = index;
+        this.turn = 1;
         hitbox = new Rectangle(x,y,hitboxWidth,hitboxHeight);
     }
 
@@ -80,5 +83,13 @@ public class Piece {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public void setTurn(int turn) {
+        this.turn = turn;
     }
 }

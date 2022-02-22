@@ -146,8 +146,6 @@ public class Board {
             List<Piece> pieces = currentPiecesPositions();
             Rocco.getInstance().addFacts(moves,pieces);
             Rocco.getInstance().startIA();
-            //Muovere pedine
-            //changeTurn();
         }
     }
     private boolean shouldEat(int x , int y){

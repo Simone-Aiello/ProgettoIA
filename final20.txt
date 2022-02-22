@@ -56,8 +56,6 @@ occupata(Y,X):-posizione(_,Y,X).
 %posizione(22,3,9).
 cella(1..5,1..9).
 t(1..20).
-d(est). d(ovest).
-d(nord). d(sud). d(nordEst). d(sudEst). d(sudOvest). d(nordOvest).
 
 %generiamo tutte le mangiate possibili
 %genera tutte le possibili mangiate per avvicinamento
@@ -81,7 +79,7 @@ muovo(N,Y1,X1,Y,X)|nonMuovo(N,Y1,X1,Y,X):- posizione(N,Y1,X1) , mangio(M,K), man
 %se non posso mangiare nulla, mi muovo senza mangiare in una posizione possibile
 muovo(N,Y1,X1,Y,X)|nonMuovo(N,Y1,X1,Y,X) :- mossaPossibile(N,Y,X) , posizione(N,Y1,X1) , not mangioObbligato.
 
-almenoDueMuovoIniziali:-#count{N,Y,X: muovo(N,Y1,X1,Y,X)}>1.
+%almenoDueMuovoIniziali:-#count{N,Y,X: muovo(N,Y1,X1,Y,X)}>1.
 %Sono obbligato a muovermi una sola volta all inizio
 :-#count{N,Y,X: muovo(N,Y1,X1,Y,X)}!=1.
 
@@ -90,7 +88,8 @@ celleMangiate(M,1):-mangio(M,_).
 
 celleMangiate(M,1):-muovo(N,Y1,X1,Y,X), DIRY = Y-Y1, DIRX=X-X1 , mangio(_,K) ,celleMangiate(M1,1),posizione(M1,YY,XX), posizione(M,YY+DIRY*K , XX+DIRX*K) , M>22. 
 
-mossa(N,Y1,X1,Y,X,1):-muovo(N,Y1,X1,Y,X), not almenoDueMuovoIniziali.
+%, not almenoDueMuovoIniziali lo abbiamo rimosso (velocizza il programma se lo rimettiamo)
+mossa(N,Y1,X1,Y,X,1):-muovo(N,Y1,X1,Y,X).
 
 
 %mosse opzionali data la cella che abbiamo deciso di muovere 
@@ -166,6 +165,13 @@ mossa(N,Y1,X1,Y,X,T):-muovoOpz(N,Y1,X1,Y,X,T), not almenoDueMuovo(T) , T<12 .
 %se posizione(A,B,C) not cella mangiata 
 %aggiungere T in celle Mangiate mossa(N,Y1,X1,Y,X,T):-muovoOpz(N,Y1,X1,Y,X,T),#count{N2,Y12,X12,Y2,X2,T : muovoOpz(N2,Y12,X12,Y2,X2,T)} =1.
 
+intorno(A,B):-pedina(A),posizione(A,Y,X),posizione(B,Y1,X1), Y<=Y1+1,Y>=Y1-1 , X<=X1+1,X>=X1-1 ,A!=B , not pedinaMossa(A), not pedinaMossa(B), A<=22, B <=22.
+intorno(A,B):-pedinaMossa(A), lastPos(A,Y,X),posizione(B,Y1,X1), Y<=Y1+1,Y>=Y1-1 , X<=X1+1,X>=X1-1 ,A!=B, A<=22, B <=22.
+intorno(B,A):-pedinaMossa(A),intorno(A,B), A<=22, B <=22.
+lastPos(A,Y1,X1):-#max{K : mossa(A,_,_,_,_,K)} = L,mossa(A,_,_,Y1,X1,L).
 eaten(A):-celleMangiate(A,_).
-:~pedina(A),not eaten(A).[1@1,A]
- 
+pedinaMossa(A) :- mossa(A,_,_,_,_,_).
+:~ pedina(A),not eaten(A).[1@3,A]
+:~ pedina(A),intorno(B,A).[1@2,A,B]
+:~ posizione(A,Y,X), lastPos(A,Y1,X1), &mod(Y1,2;Z), &mod(X1,2;Z1), Z != Z1, Y1 != 1, Y1 != 5, X1 != 1, X1 != 9. [1@1,A]
+:~ posizione(A,Y,X),not pedinaMossa(A),A <= 22, &mod(Y,2;Z), &mod(X,2;Z1), Z != Z1. [1@1,A]

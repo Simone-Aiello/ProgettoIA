@@ -11,7 +11,8 @@ public class PossibleMoves {
     private int y;
     @Param(2)
     private int x;
-
+    @Param(3)
+    private int turn = 1;
     public PossibleMoves() {}
 
     public PossibleMoves(int index, int y, int x) {
@@ -42,5 +43,13 @@ public class PossibleMoves {
 
     public void setX(int x) {
         this.x = x;
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public void setTurn(int turn) {
+        this.turn = turn;
     }
 }
