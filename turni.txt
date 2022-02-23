@@ -1,3 +1,4 @@
+
 pedina(1..44).
 occupata(Y,X,W):-posizione(_,Y,X,W).
 cella(1..5,1..9).
@@ -6,8 +7,8 @@ turno(1..2).
 
 %generiamo tutte le mangiate possibili
 %genera tutte le possibili mangiate per avvicinamento
-mangiataPossibile(N,Y,X,M,1,W):-mossaPossibile(N,Y,X,W), posizione(N,Y1,X1,W), DIRX=X-X1 , DIRY=Y-Y1, posizione(M,Y+DIRY,X+DIRX,W) , M>22, &mod(W,2;Z), Z = 1.
-mangiataPossibile(N,Y,X,M,1,W):-mossaPossibile(N,Y,X,W), posizione(N,Y1,X1,W), DIRX=X-X1 , DIRY=Y-Y1, posizione(M,Y+DIRY,X+DIRX,W) , M<=22, &mod(W,2;Z), Z = 0.
+mangiataPossibile(N,Y,X,M,1,W):-mossaPossibile(N,Y,X,W), posizione(N,Y1,X1,W), DIRX=X-X1 , DIRY=Y-Y1, posizione(M,Y+DIRY,X+DIRX,W), M>22, &mod(W,2;Z), Z = 1.
+mangiataPossibile(N,Y,X,M,1,W):-mossaPossibile(N,Y,X,W), posizione(N,Y1,X1,W), DIRX=X-X1 , DIRY=Y-Y1, posizione(M,Y+DIRY,X+DIRX,W),M<=22, &mod(W,2;Z), Z = 0.
 
 %genera tutte le possibile mangiate per allontanamento
 mangiataPossibile(N,Y,X,M,-1,W):-mossaPossibile(N,Y,X,W), posizione(N,Y1,X1,W), DIRX=X-X1 , DIRY=Y-Y1, posizione(M,Y-2*DIRY,X-2*DIRX,W) , M>22, &mod(W,2;Z), Z = 1.
@@ -96,15 +97,28 @@ celleMangiate(M,T,W):-mangioOpz(M,_,T,W),mossa(N,Y1,X1,Y,X,T,W).
 celleMangiate(M,T,W):-mossa(N,Y1,X1,Y,X,T,W), DIRY = Y-Y1, DIRX=X-X1 , mangioOpz(_,K,T,W) ,celleMangiate(M1,T,W), not celleMangiate(M1,T-1,W),posizione(M1,YY,XX,W), posizione(M,YY+DIRY*K , XX+DIRX*K,W), not celleMangiate(M,T-1,W) , M>22, &mod(W,2;Z), Z = 1.
 celleMangiate(M,T,W):-mossa(N,Y1,X1,Y,X,T,W), DIRY = Y-Y1, DIRX=X-X1 , mangioOpz(_,K,T,W) ,celleMangiate(M1,T,W), not celleMangiate(M1,T-1,W),posizione(M1,YY,XX,W), posizione(M,YY+DIRY*K , XX+DIRX*K,W), not celleMangiate(M,T-1,W) , M<=22, &mod(W,2;Z), Z = 0.
 
-mossa(N,Y1,X1,Y,X,T,W):-muovoOpz(N,Y1,X1,Y,X,T,W), not almenoDueMuovo(T,W) , T<12 .
+mossa(N,Y1,X1,Y,X,T,W):-muovoOpz(N,Y1,X1,Y,X,T,W), not almenoDueMuovo(T,W) , T<12,turno(W) .
 
 pedinaMossa(A,W) :- mossa(A,_,_,_,_,_,W).
 eaten(A,W):-celleMangiate(A,T,W).
 lastPos(A,Y1,X1,W):-#max{K : mossa(A,_,_,_,_,K,W)} = L,mossa(A,_,_,Y1,X1,L,W).
 
-%posizione(N,Y,X,W+1):-turno(W+1),posizione(N,Y,X,W), not eaten(N,W), not pedinaMossa(N,W).
-%posizione(N,Y,X,W+1):-lastPos(N,Y,X,W).
-%mi impediscono di muovermi sulle posizioni sulle quali sono già stato e di muovermi nella stessa direzione della mossa precedente
+posizione(N,Y,X,W+1):-turno(W+1),posizione(N,Y,X,W),not eaten(N,W), not pedinaMossa(N,W).
+posizione(N,Y,X,W+1):-lastPos(N,Y,X,W).
+
+%per avvicinamento
+mossaObbligata(N,Y,X,W):-posizione(N,Y1,X1,W),W>1, Y<=Y1+1,Y>=Y1-1,X<=X1+1,X>=X1-1, DIRX=X-X1, DIRY=Y-Y1,posizione(M,Y+DIRY,X+DIRX,W),M<=22,N>22, not occupata(Y,X,W) .
+
+%per allontanamento
+mossaObbligata(N,Y,X,W):-posizione(N,Y1,X1,W),W>1, Y<=Y1+1,Y>=Y1-1,X<=X1+1,X>=X1-1, DIRX=X-X1, DIRY=Y-Y1,posizione(M,Y1-DIRY,X1-DIRX,W),M<=22,N>22, not occupata(Y,X,W) .
+
+almenoUno(W):-mossaObbligata(_,_,_,W).
+
+%se almeno uno , non genero le mosse possibili
+%mossaPossibile(N,Y,X,W):-not almenoUno(W), posizione(N,Y1,X1,W), W>1, cella(Y,X), Y<=Y1+1,Y>=Y1-1,X<=X1+1,X>=X1-1,not occupata(Y,X,W),N>22.
+%mossaPossibile(N,Y,X,W):-mossaObbligata(N,Y,X,W).
+
+%mi impediscono di muovermi sulle posizioni sulle quali sono gia stato e di muovermi nella stessa direzione della mossa precedente
 
 :-muovo(N,_,_,_,_,W),muovo(N1,_,_,_,_,W),N!=N1.
 :-mossa(N,Y1,X1,Y,X,T,W) ,posizione(N,Y,X,W).
@@ -115,10 +129,11 @@ lastPos(A,Y1,X1,W):-#max{K : mossa(A,_,_,_,_,K,W)} = L,mossa(A,_,_,Y1,X1,L,W).
 
 %#show muovo/5.
 %#show mangio/2.
-%#show celleMangiate/3.
-%#show mossa/7.
+#show celleMangiate/3.
+#show mossa/7.
 %#show muovoOpz/6.
 %#show mangioOpz/3.
+%#show eaten/2.
 %#show posizione/4.
 %#show mosseOpzionali/6.
 %#show mangiateOpzionali/6.
@@ -135,4 +150,7 @@ lastPos(A,Y1,X1,W):-#max{K : mossa(A,_,_,_,_,K,W)} = L,mossa(A,_,_,Y1,X1,L,W).
 %:~ posizione(A,Y,X), lastPos(A,Y1,X1), &mod(Y1,2;Z), &mod(X1,2;Z1), Z != Z1, Y1 != 1, Y1 != 5, X1 != 1, X1 != 9. [1@1,A]
 %:~ posizione(A,Y,X),not pedinaMossa(A),A <= 22, &mod(Y,2;Z), &mod(X,2;Z1), Z != Z1. [1@1,A]
 
-:~pedina(A), turno(W), not eaten(A,W), &mod(W,2;Z), Z=1. [1@1,A,W]
+%:~posizione(A,Y,X,W), not eaten(A,W),&mod(W,2;Z), Z = 1. [1@1,A,W] ??????????????????????????????????????
+z(A,W):-posizione(A,Y,X,W), not eaten(A,W), &mod(W,2;Z), Z = 1.
+:~z(A,W).[1@1,A,W]
+:~ mossaObbligata(N,Y,X,W).[1@2,N,Y,X,W]
