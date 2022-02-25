@@ -1,4 +1,3 @@
-
 pedina(1..44).
 occupata(Y,X,W):-posizione(_,Y,X,W).
 cella(1..5,1..9).
@@ -97,7 +96,8 @@ celleMangiate(M,T,W):-mangioOpz(M,_,T,W),mossa(N,Y1,X1,Y,X,T,W).
 celleMangiate(M,T,W):-mossa(N,Y1,X1,Y,X,T,W), DIRY = Y-Y1, DIRX=X-X1 , mangioOpz(_,K,T,W) ,celleMangiate(M1,T,W), not celleMangiate(M1,T-1,W),posizione(M1,YY,XX,W), posizione(M,YY+DIRY*K , XX+DIRX*K,W), not celleMangiate(M,T-1,W) , M>22, &mod(W,2;Z), Z = 1.
 celleMangiate(M,T,W):-mossa(N,Y1,X1,Y,X,T,W), DIRY = Y-Y1, DIRX=X-X1 , mangioOpz(_,K,T,W) ,celleMangiate(M1,T,W), not celleMangiate(M1,T-1,W),posizione(M1,YY,XX,W), posizione(M,YY+DIRY*K , XX+DIRX*K,W), not celleMangiate(M,T-1,W) , M<=22, &mod(W,2;Z), Z = 0.
 
-mossa(N,Y1,X1,Y,X,T,W):-muovoOpz(N,Y1,X1,Y,X,T,W), not almenoDueMuovo(T,W) , T<12,turno(W) .
+
+mossa(N,Y1,X1,Y,X,T,W):-muovoOpz(N,Y1,X1,Y,X,T,W), not almenoDueMuovo(T,W) , T<11,turno(W) .
 
 pedinaMossa(A,W) :- mossa(A,_,_,_,_,_,W).
 eaten(A,W):-celleMangiate(A,T,W).
@@ -108,20 +108,20 @@ posizione(N,Y,X,W+1):-turno(W+1),posizione(N,Y,X,W),not eaten(N,W), not pedinaMo
 posizione(N,Y,X,W+1):-lastPos(N,Y,X,W).
 
 %per avvicinamento
-mossaObbligata(N,M,Y,X,W):-posizione(N,Y1,X1,W),W>1, cella(Y,X) ,Y<=Y1+1,Y>=Y1-1,X<=X1+1,X>=X1-1, DIRX=X-X1, DIRY=Y-Y1, Y4=Y+DIRY, X4=X+DIRX, X!=X1,Y!=Y1 ,posizione(M,Y4,X4,W),M<=22,N>22, not occupata(Y,X,W),cellaPotente(Y1,X1) .
-mossaObbligata(N,M,Y,X,W):-posizione(N,Y1,X,W),W>1, cella(Y,X) ,Y<=Y1+1,Y>=Y1-1,  DIRY=Y-Y1,posizione(M,Y+DIRY,X,W),M<=22,N>22, not occupata(Y,X,W).
-mossaObbligata(N,M,Y,X,W):-posizione(N,Y,X1,W),W>1, cella(Y,X) ,X<=X1+1,X>=X1-1, DIRX=X-X1, posizione(M,Y,X+DIRX,W),M<=22,N>22, not occupata(Y,X,W).
+mossaObbligata(N,M,Y,X,1,W):-posizione(N,Y1,X1,W),W>1, cella(Y,X) ,Y<=Y1+1,Y>=Y1-1,X<=X1+1,X>=X1-1, DIRX=X-X1, DIRY=Y-Y1, Y4=Y+DIRY, X4=X+DIRX, X!=X1,Y!=Y1 ,posizione(M,Y4,X4,W),M<=22,N>22, not occupata(Y,X,W),cellaPotente(Y1,X1) .
+mossaObbligata(N,M,Y,X,1,W):-posizione(N,Y1,X,W),W>1, cella(Y,X) ,Y<=Y1+1,Y>=Y1-1,  DIRY=Y-Y1,posizione(M,Y+DIRY,X,W),M<=22,N>22, not occupata(Y,X,W).
+mossaObbligata(N,M,Y,X,1,W):-posizione(N,Y,X1,W),W>1, cella(Y,X) ,X<=X1+1,X>=X1-1, DIRX=X-X1, posizione(M,Y,X+DIRX,W),M<=22,N>22, not occupata(Y,X,W).
 
 %per allontanamento
-mossaObbligata(N,M,Y,X,W):-posizione(N,Y1,X1,W),W>1,cella(Y,X) ,Y<=Y1+1,Y>=Y1-1,X<=X1+1,X>=X1-1, DIRX=X-X1, DIRY=Y-Y1, Y4=Y1-DIRY, X4=X1-DIRX, X!=X1,Y!=Y1  ,posizione(M,Y4,X4,W),M<=22,N>22, not occupata(Y,X,W),cellaPotente(Y1,X1) .
-mossaObbligata(N,M,Y,X,W):-posizione(N,Y1,X,W),W>1, cella(Y,X) ,Y<=Y1+1,Y>=Y1-1,  DIRY=Y-Y1,posizione(M,Y1-DIRY,X,W),M<=22,N>22, not occupata(Y,X,W) .
-mossaObbligata(N,M,Y,X,W):-posizione(N,Y,X1,W),W>1, cella(Y,X) ,X<=X1+1,X>=X1-1, DIRX=X-X1, posizione(M,Y,X1-DIRX,W),M<=22,N>22, not occupata(Y,X,W) .
+mossaObbligata(N,M,Y,X,-1,W):-posizione(N,Y1,X1,W),W>1,cella(Y,X) ,Y<=Y1+1,Y>=Y1-1,X<=X1+1,X>=X1-1, DIRX=X-X1, DIRY=Y-Y1, Y4=Y1-DIRY, X4=X1-DIRX, X!=X1,Y!=Y1  ,posizione(M,Y4,X4,W),M<=22,N>22, not occupata(Y,X,W),cellaPotente(Y1,X1) .
+mossaObbligata(N,M,Y,X,-1,W):-posizione(N,Y1,X,W),W>1, cella(Y,X) ,Y<=Y1+1,Y>=Y1-1,  DIRY=Y-Y1,posizione(M,Y1-DIRY,X,W),M<=22,N>22, not occupata(Y,X,W) .
+mossaObbligata(N,M,Y,X,-1,W):-posizione(N,Y,X1,W),W>1, cella(Y,X) ,X<=X1+1,X>=X1-1, DIRX=X-X1, posizione(M,Y,X1-DIRX,W),M<=22,N>22, not occupata(Y,X,W) .
 
-almenoUno(W):-mossaObbligata(_,_,_,W).
+%almenoUno(W):-mossaObbligata(_,_,_,_,_,W).
 
 %se almeno uno , non genero le mosse possibili
 %mossaPossibile(N,Y,X,W):-not almenoUno(W), posizione(N,Y1,X1,W), W>1, cella(Y,X), Y<=Y1+1,Y>=Y1-1,X<=X1+1,X>=X1-1,not occupata(Y,X,W),N>22.
-%mossaPossibile(N,Y,X,W):-mossaObbligata(N,Y,X,W).
+%mossaPossibile(N,Y,X,W):-mossaObbligata(N,M,Y,X,_,W).
 
 %mi impediscono di muovermi sulle posizioni sulle quali sono gia stato e di muovermi nella stessa direzione della mossa precedente
 
@@ -136,15 +136,53 @@ almenoUno(W):-mossaObbligata(_,_,_,W).
 %#show mangio/2.
 #show celleMangiate/3.
 #show mossa/7.
-#show lastPos/4.
-#show occupata/3.
+%#show lastPos/4.
+%#show occupata/3.
 %#show muovoOpz/6.
 %#show mangioOpz/3.
 %#show eaten/2.
-#show posizione/4.
+%#show posizione/4.
 %#show mosseOpzionali/6.
-#show mossaObbligata/5.
+#show mossaObbligata/6.
 %#show mangiateOpzionali/6.
+
+%:~ pedina(A),not eaten(A).[1@3,A]
+%:~ pedina(A),intorno(B,A).[1@,A,B]
+
+cellaPeriferica(Y,X):-cella(Y,X),Y=1.
+cellaPeriferica(Y,X):-cella(Y,X),Y=5.
+cellaPeriferica(Y,X):-cella(Y,X),X=1.
+cellaPeriferica(Y,X):-cella(Y,X),X=9.
+:~ posizione(A,Y,X,W), lastPos(A,Y1,X1,W),W>1, not cellaPotente(Y1,X1). [1@3,A]
+:~ posizione(A,Y,X,W),W>1,not pedinaMossa(A,W),not cellaPotente(Y,X).[1@3,A]
+:~ posizione(A,Y,X,W), lastPos(A,Y1,X1,W),W>1, cellaPeriferica(Y1,X1). [1@3,A]
+:~ posizione(A,Y,X,W),W>1,not pedinaMossa(A,W), cellaPeriferica(Y,X).[1@3,A]
+
+
+%:~posizione(A,Y,X,W), not eaten(A,W),&mod(W,2;Z), Z = 1. [1@1,A,W] ??????????????????????????????????????
+z(A,W):-posizione(A,Y,X,W), not eaten(A,W), &mod(W,2;Z), A>22 ,Z = 1.
+:~z(A,W).[1@4,A,W]
+
+#show obbligataInCoda/5.
+:~ obbligataInCoda(N,Y,X,M,W).[2@4,Y,X,M,W]
+obbligataInCoda(N,Y,X,M,W):-mossaObbligata(N,M,Y,X,_,W).
+obbligataInCoda(N,Y,X,M,W):-obbligataInCoda(N,Y,X,M1,W),posizione(N,Y1,X1,W), DIRY = Y-Y1, DIRX=X-X1, posizione(M1,YY , XX,W) ,posizione(M,YY+DIRY*K , XX+DIRX*K,W), M<=22, &mod(W,2;Z), Z = 0.
+
+%:~ mossaObbligata(N,M,Y,X,K,W).[1@4]
+manhattanDistance(A,B,C):- posizione(A,Y,X,W),posizione(B,Y1,X1,W),posizionePeriferica(Y1,X1),W=1,&abs(X-X1;C1),&abs(Y-Y1;C2),A<=22,B>22,C=C1+C2.
+%minDistance(A,K):-pedina(A),#min{C:manhattanDistance(A,B,C)}=K.
+%:~minDistance(A,K).[K@2,A]
+:~manhattanDistance(A,B,C).[C@2,A,B]
+
+
+
+
+
+%:~ posizione(A,Y,X,W), A<=22, Y = 0, X = 0, W = 1. [1@1,A]
+%:~ posizione(A,Y,X,W), A<=22, Y = 5, X = 9, W = 1. [1@1,A]
+%:~ posizione(A,Y,X,W), A<=22, Y = 0, X = 9, W = 1. [1@1,A]
+%:~ posizione(A,Y,X,W), A<=22, Y = 5, X = 0, W = 1. [1@1,A]
+
 %se posizione(A,B,C) not cella mangiata
 %aggiungere T in celle Mangiate mossa(N,Y1,X1,Y,X,T):-muovoOpz(N,Y1,X1,Y,X,T),#count{N2,Y12,X12,Y2,X2,T : muovoOpz(N2,Y12,X12,Y2,X2,T)} =1.
 %intorno(A,B):-pedina(A),posizione(A,Y,X),posizione(B,Y1,X1), Y<=Y1+1,Y>=Y1-1 , X<=X1+1,X>=X1-1 ,A!=B , not pedinaMossa(A), not pedinaMossa(B), A<=22, B <=22.
@@ -153,18 +191,3 @@ almenoUno(W):-mossaObbligata(_,_,_,W).
 %lastPos(A,Y1,X1):-#max{K : mossa(A,_,_,_,_,K)} = L,mossa(A,_,_,Y1,X1,L).
 %eaten(A):-celleMangiate(A,_).
 %pedinaMossa(A) :- mossa(A,_,_,_,_,_).
-%:~ pedina(A),not eaten(A).[1@3,A]
-%:~ pedina(A),intorno(B,A).[1@,A,B]
-:~ posizione(A,Y,X,W), lastPos(A,Y1,X1,W),W>1, not cellaPotente(Y1,X1), Y1 != 1, Y1 != 5, X1 != 1, X1 != 9. [1@3,A]
-:~ posizione(A,Y,X,W),W>1,not pedinaMossa(A,W),not cellaPotente(Y,X),Y != 1, Y != 5, X != 1, X != 9. [1@3,A]
-
-%:~posizione(A,Y,X,W), not eaten(A,W),&mod(W,2;Z), Z = 1. [1@1,A,W] ??????????????????????????????????????
-z(A,W):-posizione(A,Y,X,W), not eaten(A,W), &mod(W,2;Z), Z = 1.
-:~z(A,W).[1@4,A,W]
-:~ mossaObbligata(N,M,Y,X,W).[1@4,N,M,Y,X,W]
-distanza(A,B,C):- posizione(A,Y,X,W),posizione(B,Y1,X1,W),W=1,&abs(X-X1;C1),&abs(Y-Y1;C2),A<=22,B>22,C=C1+C2.
-:~distanza(A,B,C,W).[C@1,A,B]
-:~ posizione(A,Y,X,W), A<=22, Y = 0, X = 0, W = 1. [1@2,A]
-:~ posizione(A,Y,X,W), A<=22, Y = 5, X = 9, W = 1. [1@2,A]
-:~ posizione(A,Y,X,W), A<=22, Y = 0, X = 9, W = 1. [1@2,A]
-:~ posizione(A,Y,X,W), A<=22, Y = 5, X = 0, W = 1. [1@2,A]

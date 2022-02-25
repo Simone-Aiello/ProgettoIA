@@ -99,7 +99,8 @@ public class BoardController extends MouseAdapter implements Callback {
                 s = s.replace("(","");
                 s = s.replace(")","");
                 String[] splitted = s.split(",");
-                moves.add(splitted);
+                if(Integer.parseInt(splitted[6])==1)
+                	moves.add(splitted);
             }
             if(s.contains("celleMangiate")){
                 s = s.replace("celleMangiate(","");
@@ -107,6 +108,8 @@ public class BoardController extends MouseAdapter implements Callback {
                 s = s.replace(")","");
                 String [] split = s.split(",");
                 eat.add(split);
+                if(Integer.parseInt(split[2])==1)
+                	eat.add(split);
             }
         }
         for(String[] m : moves){

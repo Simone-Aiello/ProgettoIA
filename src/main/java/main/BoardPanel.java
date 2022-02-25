@@ -1,17 +1,50 @@
 package main;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class BoardPanel extends JPanel {
 	private final int cellDimension = 100;
 	private BoardController b;
 	private int paddingX = 90;
 	private int paddingY = 65;
+	private Image board = null ;
+	private Image white = null ;
+	private Image black = null ;
+	
+	public BoardPanel() {
+		try {
+			board = ImageIO.read(new File("board3.png"));
+			white = ImageIO.read(new File("white.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
+			black = ImageIO.read(new File("black.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		try {
+
+			g.drawImage(board.getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH), 0 ,0 ,null );
+		}
+		catch (Exception e) {
+			if(board == null)
+				System.out.println("CIAO");
+			System.out.println("ciao");
+			g.setColor(new Color(193,154,107));
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
+		}
+
+		g.setColor(Color.black);
 		for (int i = 0; i < b.getBoard().getTABLE_HEIGHT(); i++) {
 			for (int j = 0; j < b.getBoard().getTABLE_WIDTH() - 1; j++) {
 				int realX = j * cellDimension + paddingX;
@@ -30,23 +63,23 @@ public class BoardPanel extends JPanel {
 		}
 		g.setColor(Color.orange);
 		for(var p : b.getBoard().getSelectable()) {
-			g.fillOval(p.getNormalX() * cellDimension - 29 + paddingX, p.getNormalY() * cellDimension - 29 + paddingY, 58, 58);
+			g.fillOval(p.getNormalX() * cellDimension - 31 + paddingX, p.getNormalY() * cellDimension - 31 + paddingY, 62, 62);
 		}
 		for (int i = 0; i < b.getBoard().getTABLE_HEIGHT(); i++) {
 			for (int j = 0; j < b.getBoard().getTABLE_WIDTH(); j++) {
 				if (b.getBoard().getCells()[i][j] != null) {
-					if (b.getBoard().getCells()[i][j].getType() == Settings.PLAYER_1) {
-						g.setColor(Color.LIGHT_GRAY);
-					} else {
-						g.setColor(Color.BLACK);
-					}
 					if (b.getBoard().getCells()[i][j].isSelected()) {
-						int red = g.getColor().getRed();
-						int green = g.getColor().getGreen();
-						int blue = g.getColor().getBlue();
 						g.setColor(Color.RED);
+						g.fillOval(j * cellDimension - 27 + paddingX, i * cellDimension - 27 + paddingY, 54, 54);
 					}
-					g.fillOval(j * cellDimension - 27 + paddingX, i * cellDimension - 27 + paddingY, 54, 54);
+					else if (b.getBoard().getCells()[i][j].getType() == Settings.PLAYER_1) {
+						
+						g.drawImage(white,j * cellDimension - 27 + paddingX, i * cellDimension - 27 + paddingY,null);
+					} else {
+						
+						g.drawImage(black,j * cellDimension - 27 + paddingX, i * cellDimension - 27 + paddingY,null);
+					}
+					
 					g.setColor(Color.BLACK);
 					if(	b.getBoard().getCells()[i][j].getType() == Settings.PLAYER_2)
 							g.setColor(Color.WHITE);
