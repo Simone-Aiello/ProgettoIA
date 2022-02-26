@@ -168,7 +168,8 @@ public class Board {
     	  for (int i = x - 1; i < x + 2 && i < TABLE_HEIGHT; i++) {
               for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
                   if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) {
-                    return true;
+                	  if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2)
+                		  return true;
                   }
               }
           }
@@ -292,9 +293,10 @@ public class Board {
             }
             choose.clear();
             choosingWhatToEat = false;
-            if(!stoppable)
-            	changeTurn();
             //currentSelected = cells[x][y];
+            if(!shouldEat(x,y))
+            	changeTurn();
+            //
             //fillSelectable();
             //changeTurn();
             return;
