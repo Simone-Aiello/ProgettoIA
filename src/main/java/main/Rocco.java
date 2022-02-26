@@ -85,3 +85,29 @@ public class Rocco{
     }
 
 }
+
+/*
+ * mosseOpzionali(N,Y,X,Y,X+1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W), not occupata(Y,X+1,W),cella(Y,X+1).
+mosseOpzionali(N,Y,X,Y,X+1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),celleMangiate(M,T1,W),T1<T, posizione(M,Y,X+1,W).
+
+mosseOpzionali(N,Y,X,Y+1,X,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W), not occupata(Y+1,X,W),cella(Y+1,X).
+mosseOpzionali(N,Y,X,Y+1,X,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),celleMangiate(M,T1,W),T1<T, posizione(M,Y+1,X,W).
+
+mosseOpzionali(N,Y,X,Y,X-1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W), not occupata(Y,X-1,W),cella(Y,X-1).
+mosseOpzionali(N,Y,X,Y,X-1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),celleMangiate(M,T1,W),T1<T, posizione(M,Y,X-1,W).
+
+mosseOpzionali(N,Y,X,Y-1,X,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),not occupata(Y-1,X,W),cella(Y-1,X).
+mosseOpzionali(N,Y,X,Y-1,X,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),celleMangiate(M,T1,W),T1<T, posizione(M,Y-1,X,W).
+
+mosseOpzionali(N,Y,X,Y+1,X+1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),not occupata(Y+1,X+1,W),cella(Y+1,X+1), cellaPotente(Y,X).
+mosseOpzionali(N,Y,X,Y+1,X+1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),celleMangiate(M,T1,W),T1<T, posizione(M,Y+1,X+1,W), cellaPotente(Y,X).
+
+mosseOpzionali(N,Y,X,Y+1,X-1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W), not occupata(Y+1,X-1,W),cella(Y+1,X-1),cellaPotente(Y,X).
+mosseOpzionali(N,Y,X,Y+1,X-1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),celleMangiate(M,T1,W),T1<T, posizione(M,Y+1,X-1,W), cellaPotente(Y,X).
+
+mosseOpzionali(N,Y,X,Y-1,X+1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W), not occupata(Y-1,X+1,W),cella(Y-1,X+1), cellaPotente(Y,X).
+mosseOpzionali(N,Y,X,Y-1,X+1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),celleMangiate(M,T1,W),T1<T, posizione(M,Y-1,X+1,W), cellaPotente(Y,X).
+
+mosseOpzionali(N,Y,X,Y-1,X-1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W), not occupata(Y-1,X-1,W),cella(Y-1,X-1), cellaPotente(Y,X).
+mosseOpzionali(N,Y,X,Y-1,X-1,T+1,W):- mangioObbligato(W), mossa(N,Y1,X1,Y,X,T,W),celleMangiate(M,T1,W),T1<T, posizione(M,Y-1,X-1,W), cellaPotente(Y,X).
+*/
