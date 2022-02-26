@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class Board {
     private int TABLE_HEIGHT = 5;
@@ -18,6 +19,7 @@ public class Board {
     private List<Pair<Integer, Integer>> possibleMoves = new ArrayList<>(8);
     private boolean choosingWhatToEat = false;
     private boolean stoppable = false;
+    private boolean forcedEatAI = false;
     private Map<Pair<Integer,Integer>,List<Piece>> choose = new HashMap<>();
     private int currentPlayer = Settings.PLAYER_1;
     private void init() {
@@ -95,7 +97,7 @@ public class Board {
     }
     public List<PossibleMoves> IAMoves(){
         List<PossibleMoves> possibleAIMoves = new ArrayList<>();
-        boolean canEat = false;
+        forcedEatAI = false;
         for(Piece p : selectable){
             int x = p.getNormalY();
             int y = p.getNormalX();
@@ -104,12 +106,12 @@ public class Board {
                     if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) {
                         if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2) {
                             if (eatSomething(x, y, i, j) && (lastDirection == null || (!lastDirection.equals(Pair.of(i-x,j-y)) && !lastDirection.equals(Pair.of(x-i,y-j))))) {
-                                if (false) {
+                                if (!forcedEatAI) {
                                     possibleAIMoves.clear();
-                                    canEat = true;
+                                    forcedEatAI = true;
                                 }
                                 possibleAIMoves.add(new PossibleMoves(p.getIndex(),i + 1,j + 1));
-                            } else if (!canEat) {
+                            } else if (!forcedEatAI) {
                                 possibleAIMoves.add(new PossibleMoves(p.getIndex(),i + 1,j + 1));
                             }
                         }
@@ -117,7 +119,12 @@ public class Board {
                 }
             }
         }
-        System.out.println(possibleAIMoves.size());
+        
+        Random r = new Random(System.currentTimeMillis());
+        while(possibleAIMoves.size()>14) {  	
+        	int randomI = r.nextInt(possibleAIMoves.size());
+        	possibleAIMoves.remove(randomI);
+        }
         return possibleAIMoves;
     }
     private List<Piece> currentPiecesPositions(){
@@ -142,13 +149,75 @@ public class Board {
         currentSelected = null;
         fillSelectable();
         if(currentPlayer == Settings.PLAYER_2){
-            List<PossibleMoves> moves = IAMoves();
+            List<PossibleMoves> moves = IAMoves();        
             List<Piece> pieces = currentPiecesPositions();
-            Rocco.getInstance().addFacts(moves,pieces);
+            if(forcedEatAI) {
+            	String mangiatePossibili = mangiatePossibili(moves);
+            	String mangio = mangioDisgiuntivo(moves);
+            	Rocco.getInstance().addFacts(mangio.concat(mangiatePossibili),pieces);
+            }
+            else Rocco.getInstance().addFacts(moves,pieces);
             Rocco.getInstance().startIA();
         }
     }
-    private boolean shouldEat(int x , int y){
+    
+    private Integer eatDirection(int x, int y, int x1, int y1 , boolean avvicinamento) {
+        Integer eaten = null;
+        int xdir = x1 - x;
+        int ydir = y1 - y;
+        int newX = x1 + xdir;
+    	int newY = y1 + ydir;
+        if(!avvicinamento) {
+        	newX = x - xdir;
+        	newY = y - ydir;
+        }
+        if ((validPosition(newX, newY) && cells[newX][newY] != null && cells[newX][newY].getType() == Settings.PLAYER_1) )  
+        	eaten = cells[newX][newY].getIndex();
+        return eaten;
+    }
+    
+    private String mangioDisgiuntivo(List<PossibleMoves> moves) {
+		StringBuilder mangio = new StringBuilder();
+		List<Integer> addedAvv = new ArrayList<Integer>();
+		List<Integer> addedAll = new ArrayList<Integer>();
+		for(var m : moves) {
+			int n = m.getIndex();
+			int y = m.getY()-1;
+			int x = m.getX()-1;
+			Piece p = posizione(n);
+			Integer avv = eatDirection(p.getNormalY() , p.getNormalX(),y,x, true);
+			Integer all = eatDirection(p.getNormalY() , p.getNormalX(),y,x, false);
+			if(avv!=null && !addedAvv.contains(avv)) {
+				mangio.append("mangio("+avv+", 1 ,1)|");
+				addedAvv.add(avv);
+			}
+			if(all!=null && !addedAll.contains(all)) {
+				mangio.append("mangio("+all+", -1 ,1)|");
+				addedAvv.add(all);
+			}
+		}
+		mangio.setCharAt(mangio.length()-1, '.');
+		return mangio.toString();
+	}
+
+	private String mangiatePossibili(List<PossibleMoves> moves) {
+		StringBuilder mangiatePossibili = new StringBuilder();
+		for(var m : moves) {
+			int n = m.getIndex();
+			int y = m.getY()-1;
+			int x = m.getX()-1;
+			Piece p = posizione(n);
+			Integer avv = eatDirection(p.getNormalY() , p.getNormalX(),y,x, true);
+			Integer all = eatDirection(p.getNormalY() , p.getNormalX(),y,x, false);
+			if(avv!=null)
+				mangiatePossibili.append("mangiataPossibile("+n+","+(y+1)+","+(x+1)+","+avv+", 1 ,1). ");
+			if(all!=null)
+				mangiatePossibili.append("mangiataPossibile("+n+","+(y+1)+","+(x+1)+","+all+", -1 ,1). ");
+		}
+		return mangiatePossibili.toString();
+	}
+
+	private boolean shouldEat(int x , int y){
         for (int i = x - 1; i < x + 2 && i < TABLE_HEIGHT; i++) {
             for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
                 if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) { //Ho aggiunto solo questo controllo
@@ -294,7 +363,7 @@ public class Board {
             choose.clear();
             choosingWhatToEat = false;
             //currentSelected = cells[x][y];
-            if(!shouldEat(x,y))
+            if(!shouldEat(currentSelected.getNormalY(),currentSelected.getNormalX()))
             	changeTurn();
             //
             //fillSelectable();
@@ -357,6 +426,18 @@ public class Board {
     public int getCurrentPlayer() {
 		return currentPlayer;
 	}
+    
+    public Piece posizione(int index) {
+        for(int i = 0; i < TABLE_HEIGHT;i++){
+            for(int j = 0; j < TABLE_WIDTH;j++){
+                if(cells[i][j] != null && cells[i][j].getIndex() == index){
+                    return cells[i][j];
+                    
+                }
+            }
+        }
+        return null;
+    }
     
 
     public void remove(int index) {

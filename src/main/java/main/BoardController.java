@@ -75,9 +75,9 @@ public class BoardController extends MouseAdapter implements Callback {
 
     @Override
     public void callback(Output output) {
-    	if(System.currentTimeMillis()-currentTime<2000)
+    	if(System.currentTimeMillis()-currentTime<500)
 			try {
-				Thread.sleep(2000-System.currentTimeMillis()+currentTime);
+				Thread.sleep(500-System.currentTimeMillis()+currentTime);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}

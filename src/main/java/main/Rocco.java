@@ -69,4 +69,19 @@ public class Rocco{
     public void startIA(){
         handler.startAsync(controller);
     }
+    
+    public void addFacts(String facts, List<Piece> pieces){
+        try {
+            variableProgram.clearAll();
+            variableProgram.addProgram(facts);
+            for(Piece p : pieces){
+                variableProgram.addObjectInput(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String pg = ((ASPInputProgram) variableProgram).getPrograms();
+        System.out.println(pg);
+    }
+
 }
