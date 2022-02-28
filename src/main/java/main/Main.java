@@ -1,8 +1,11 @@
 package main;
 
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,7 +14,19 @@ public class Main {
         Board game = new Board();
         JPanel bottom = new JPanel();
         bottom.setOpaque(false);
-        JButton salta = new JButton("Salta");
+        JButton salta = new JButton();
+        salta.setContentAreaFilled(false);
+        salta.setFocusable(false);
+        salta.setOpaque(false);
+        salta.setBorder(BorderFactory.createEmptyBorder());
+        salta.setAlignmentX(Component.CENTER_ALIGNMENT);
+        try {
+        	
+			salta.setIcon(new ImageIcon(ImageIO.read(new File("button.png")).getScaledInstance(110, 35, Image.SCALE_SMOOTH)));
+		} catch (IOException e) {
+			salta.setText("Salta");
+			  salta.setContentAreaFilled(true);
+		}
         bottom.add(salta);
         BoardController controller = new BoardController(game,panel , salta);     
         panel.setController(controller);

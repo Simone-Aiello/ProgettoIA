@@ -1,6 +1,6 @@
 package main;
 
-import it.unical.mat.embasp.languages.asp.AnswerSets;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public class Board {
     private boolean stoppable = false;
     private boolean forcedEatAI = false;
     private Map<Pair<Integer,Integer>,List<Piece>> choose = new HashMap<>();
+    private List<Pair<Integer,Integer>> recentPositions = new ArrayList<>();
     private int currentPlayer = Settings.PLAYER_1;
     private void init() {
         int blackIndex = 1;
@@ -159,6 +160,7 @@ public class Board {
             else Rocco.getInstance().addFacts(moves,pieces);
             Rocco.getInstance().startIA();
         }
+        recentPositions.clear();
     }
     
     private Integer eatDirection(int x, int y, int x1, int y1 , boolean avvicinamento) {
@@ -222,7 +224,9 @@ public class Board {
             for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
                 if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) { //Ho aggiunto solo questo controllo
                     if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2) {
-                        if (eatSomething(x, y, i, j) && (lastDirection == null || (!lastDirection.equals(Pair.of(i-x,j-y)) && !lastDirection.equals(Pair.of(x-i,y-j))))) {
+                        if (eatSomething(x, y, i, j) && !recentPositions.contains(Pair.of(i, j)) &&(lastDirection == null || (!lastDirection.equals(Pair.of(i-x,j-y)) && !lastDirection.equals(Pair.of(x-i,y-j))))) {
+                        	System.out.println(recentPositions);
+                        	System.out.println(i+" "+j);
                         	return true;
                         }
                         }
@@ -273,7 +277,7 @@ public class Board {
         for (int i = x - 1; i < x + 2 && i < TABLE_HEIGHT; i++) {
             for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
                 if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) {
-                    if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2) {
+                    if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2 && !recentPositions.contains(Pair.of(x,y))) {
                         if (eatSomething(x, y, i, j) && (lastDirection == null || (!lastDirection.equals(Pair.of(i-x,j-y)) && !lastDirection.equals(Pair.of(x-i,y-j))))) {
                             if (!canEat) {
                                 possibleMoves.clear();
@@ -349,7 +353,11 @@ public class Board {
 
     public void move(int i, int j, int i1, int j1) {
         cells[i1][j1] = new Piece(i1, j1, cells[i][j].getType(),cells[i][j].getIndex());
-        cells[i][j] = null;  
+        cells[i][j] = null;
+        if(recentPositions.isEmpty())
+        	recentPositions.add(Pair.of(i,j));
+        recentPositions.add(Pair.of(i1,j1));
+       
     }
 
     public void select(int x, int y) {
@@ -365,9 +373,6 @@ public class Board {
             //currentSelected = cells[x][y];
             if(!shouldEat(currentSelected.getNormalY(),currentSelected.getNormalX()))
             	changeTurn();
-            //
-            //fillSelectable();
-            //changeTurn();
             return;
         }
         for (int i = 0; i < TABLE_HEIGHT; i++) {
