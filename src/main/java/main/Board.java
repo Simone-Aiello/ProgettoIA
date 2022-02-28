@@ -144,6 +144,7 @@ public class Board {
         lastDirection = null;
         stoppable = false;
         possibleMoves.clear();
+        recentPositions.clear();
         if(currentSelected != null && cells[currentSelected.getNormalY()][currentSelected.getNormalX()] != null && currentSelected!= null) {
             cells[currentSelected.getNormalY()][currentSelected.getNormalX()].setSelected(false);
         }
@@ -160,7 +161,7 @@ public class Board {
             else Rocco.getInstance().addFacts(moves,pieces);
             Rocco.getInstance().startIA();
         }
-        recentPositions.clear();
+        
     }
     
     private Integer eatDirection(int x, int y, int x1, int y1 , boolean avvicinamento) {
@@ -225,8 +226,8 @@ public class Board {
                 if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) { //Ho aggiunto solo questo controllo
                     if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2) {
                         if (eatSomething(x, y, i, j) && !recentPositions.contains(Pair.of(i, j)) &&(lastDirection == null || (!lastDirection.equals(Pair.of(i-x,j-y)) && !lastDirection.equals(Pair.of(x-i,y-j))))) {
-                        	System.out.println(recentPositions);
-                        	System.out.println(i+" "+j);
+                        	//System.out.println(recentPositions);
+                        	//System.out.println(i+" "+j);
                         	return true;
                         }
                         }
@@ -274,10 +275,11 @@ public class Board {
     private void addPossibleMoves(int x, int y) {
         possibleMoves.clear();
         boolean canEat = false;
+        System.out.println(recentPositions);
         for (int i = x - 1; i < x + 2 && i < TABLE_HEIGHT; i++) {
             for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
                 if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) {
-                    if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2 && !recentPositions.contains(Pair.of(x,y))) {
+                    if ((x % 2 != y % 2 && (i == x || j == y)) || x % 2 == y % 2 && !recentPositions.contains(Pair.of(i,j))) {
                         if (eatSomething(x, y, i, j) && (lastDirection == null || (!lastDirection.equals(Pair.of(i-x,j-y)) && !lastDirection.equals(Pair.of(x-i,y-j))))) {
                             if (!canEat) {
                                 possibleMoves.clear();
@@ -345,6 +347,8 @@ public class Board {
             choosingWhatToEat = true;
             Piece headAway = away.get(0);
             Piece headInto = into.get(0);
+            currentSelected.setX(newX);
+            currentSelected.setY(newY);
             choose.put(Pair.of(headAway.getNormalY(),headAway.getNormalX()),away);
             choose.put(Pair.of(headInto.getNormalY(),headInto.getNormalX()),into);
         }
@@ -370,7 +374,7 @@ public class Board {
             }
             choose.clear();
             choosingWhatToEat = false;
-            //currentSelected = cells[x][y];
+            System.out.println(currentSelected.getNormalY()+" "+currentSelected.getNormalX());
             if(!shouldEat(currentSelected.getNormalY(),currentSelected.getNormalX()))
             	changeTurn();
             return;
@@ -388,6 +392,8 @@ public class Board {
                         if (selected) {
                             currentSelected = cells[i][j];
                             addPossibleMoves(i, j);
+                            System.out.println("selected");
+                            System.out.println("Mosse : "+ possibleMoves);
                         } else possibleMoves.clear();
                     } else {
                         cells[i][j].setSelected(false);
@@ -409,6 +415,7 @@ public class Board {
                 }
             }
         }
+     
     }
     
     public List<Piece> getSelectable() {

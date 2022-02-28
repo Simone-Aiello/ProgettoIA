@@ -155,10 +155,10 @@ cellaPeriferica(Y,X):-cella(Y,X),X=9.
 
 %:~posizione(A,Y,X,W), not eaten(A,W),&mod(W,2;Z), Z = 1. [1@1,A,W] ??????????????????????????????????????
 z(A,W):-posizione(A,Y,X,W), not eaten(A,W), &mod(W,2;Z), A>22 ,Z = 1.
-:~z(A,W).[1@4,A,W]
+:~z(A,W).[5@4,A,W]
 
-%#show obbligataInCoda/5.
-:~ obbligataInCoda(N,Y,X,M,W).[2@4,Y,X,M,W]
+#show obbligataInCoda/5.
+:~ obbligataInCoda(N,Y,X,M,W).[3@4,Y,X,M,W]
 obbligataInCoda(N,Y,X,M,W):-mossaObbligata(N,M,Y,X,_,W).
 obbligataInCoda(N,Y,X,M,W):-obbligataInCoda(N,Y,X,M1,W),posizione(N,Y1,X1,W), DIRY = Y-Y1, DIRX=X-X1, posizione(M1,YY , XX,W) ,posizione(M,YY+DIRY*K , XX+DIRX*K,W), M<=22, &mod(W,2;Z), Z = 0.
 
