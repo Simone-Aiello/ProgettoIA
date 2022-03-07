@@ -25,7 +25,7 @@ public class BoardController extends MouseAdapter implements Callback {
         this.salta = salta;
         currentTime = System.currentTimeMillis();
         salta.setVisible(false);
-        Rocco.getInstance().init("lib/dlv2.exe","turni.txt",this);
+        AIPlayer.getInstance().init("lib/dlv2.exe","resources/turni.txt",this);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class BoardController extends MouseAdapter implements Callback {
         List<String[]> moves = new ArrayList<>();
         List<String[]> eat = new ArrayList<>();
         for(String s : optimalAs.getAnswerSet()){
-            System.out.println(s);
+            //System.out.println(s);
             if(s.contains("mossa(")){
                 s = s.replace("mossa","");
                 s = s.replace("(","");

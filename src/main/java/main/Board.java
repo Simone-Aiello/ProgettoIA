@@ -122,7 +122,7 @@ public class Board {
         }
         
         Random r = new Random(System.currentTimeMillis());
-        while(possibleAIMoves.size()>14) {  	
+        while(possibleAIMoves.size()>12) {  	
         	int randomI = r.nextInt(possibleAIMoves.size());
         	possibleAIMoves.remove(randomI);
         }
@@ -156,10 +156,10 @@ public class Board {
             if(forcedEatAI) {
             	String mangiatePossibili = mangiatePossibili(moves);
             	String mangio = mangioDisgiuntivo(moves);
-            	Rocco.getInstance().addFacts(mangio.concat(mangiatePossibili),pieces);
+            	AIPlayer.getInstance().addFacts(mangio.concat(mangiatePossibili),pieces);
             }
-            else Rocco.getInstance().addFacts(moves,pieces);
-            Rocco.getInstance().startIA();
+            else AIPlayer.getInstance().addFacts(moves,pieces);
+            AIPlayer.getInstance().startIA();
         }
         
     }
@@ -275,7 +275,6 @@ public class Board {
     private void addPossibleMoves(int x, int y) {
         possibleMoves.clear();
         boolean canEat = false;
-        System.out.println(recentPositions);
         for (int i = x - 1; i < x + 2 && i < TABLE_HEIGHT; i++) {
             for (int j = y - 1; j < y + 2 && j < TABLE_WIDTH; j++) {
                 if (i >= 0 && j >= 0 && (i != x || j != y) && cells[i][j] == null) {
@@ -374,7 +373,6 @@ public class Board {
             }
             choose.clear();
             choosingWhatToEat = false;
-            System.out.println(currentSelected.getNormalY()+" "+currentSelected.getNormalX());
             if(!shouldEat(currentSelected.getNormalY(),currentSelected.getNormalX()))
             	changeTurn();
             return;
@@ -392,8 +390,6 @@ public class Board {
                         if (selected) {
                             currentSelected = cells[i][j];
                             addPossibleMoves(i, j);
-                            System.out.println("selected");
-                            System.out.println("Mosse : "+ possibleMoves);
                         } else possibleMoves.clear();
                     } else {
                         cells[i][j].setSelected(false);

@@ -22,7 +22,7 @@ public class Main {
         salta.setAlignmentX(Component.CENTER_ALIGNMENT);
         try {
         	
-			salta.setIcon(new ImageIcon(ImageIO.read(new File("button.png")).getScaledInstance(110, 35, Image.SCALE_SMOOTH)));
+			salta.setIcon(new ImageIcon(ImageIO.read(new File("resources/button.png")).getScaledInstance(110, 35, Image.SCALE_SMOOTH)));
 		} catch (IOException e) {
 			salta.setText("Salta");
 			  salta.setContentAreaFilled(true);

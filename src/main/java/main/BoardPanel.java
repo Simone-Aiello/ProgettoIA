@@ -22,14 +22,15 @@ public class BoardPanel extends JPanel {
 	public BoardPanel() {
 
 		try {		
-			board = ImageIO.read(new File("board3.png"));
-			white = ImageIO.read(new File("white.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
-			black = ImageIO.read(new File("black.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
-			red = ImageIO.read(new File("red.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
-			purple = ImageIO.read(new File("purple.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
+			board = ImageIO.read(new File("resources/board3.png"));
+			white = ImageIO.read(new File("resources/white.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
+			black = ImageIO.read(new File("resources/black.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
+			red = ImageIO.read(new File("resources/red.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
+			purple = ImageIO.read(new File("resources/purple.png")).getScaledInstance(54, 54, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
-			System.exit(0);
+			
 			e.printStackTrace();
+			System.exit(0);
 		}
 	}
 

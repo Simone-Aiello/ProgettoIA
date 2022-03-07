@@ -16,14 +16,14 @@ import it.unical.mat.embasp.specializations.dlv2.desktop.DLV2DesktopService;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class Rocco{
+public class AIPlayer{
     private DesktopService service;
     private Handler handler;
     private InputProgram fixedProgram;
-    private static Rocco instance = null;
+    private static AIPlayer instance = null;
     private InputProgram variableProgram;
     private BoardController controller;
-    private Rocco(String exePath, String programPath,BoardController controller){
+    private AIPlayer(String exePath, String programPath,BoardController controller){
         service = new DLV2DesktopService(exePath);
         handler= new DesktopHandler(service);
         fixedProgram = new ASPInputProgram();
@@ -34,9 +34,9 @@ public class Rocco{
         this.controller = controller;
     }
     public void init(String exePath, String programPath,BoardController controller){
-        instance = new Rocco(exePath,programPath,controller);
+        instance = new AIPlayer(exePath,programPath,controller);
     }
-    public Rocco(){
+    public AIPlayer(){
         try {
             ASPMapper.getInstance().registerClass(Piece.class);
             ASPMapper.getInstance().registerClass(PossibleMoves.class);
@@ -45,9 +45,9 @@ public class Rocco{
         }
     }
 
-    public static Rocco getInstance(){
+    public static AIPlayer getInstance(){
         if(instance == null){
-            instance = new Rocco();
+            instance = new AIPlayer();
         }
         return instance;
     }
@@ -64,7 +64,7 @@ public class Rocco{
             e.printStackTrace();
         }
         String pg = ((ASPInputProgram) variableProgram).getPrograms();
-        System.out.println(pg);
+        //System.out.println(pg);
     }
     public void startIA(){
         handler.startAsync(controller);
@@ -81,7 +81,7 @@ public class Rocco{
             e.printStackTrace();
         }
         String pg = ((ASPInputProgram) variableProgram).getPrograms();
-        System.out.println(pg);
+       // System.out.println(pg);
     }
 
 }
